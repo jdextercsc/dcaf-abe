@@ -1,0 +1,65 @@
+---
+
+- name: register to RHN
+  redhat_subscription:
+    state: present
+    username: "{{ rhn_user }}"
+    password: "{{ rhn_pass }}"
+    pool: "{{ pool }}"
+
+- name: enable repos for juno
+  shell: "subscription-manager repos --list-enabled | grep 'Repo ID:   {{ item }}' || subscription-manager repos --enable={{ item }}"
+  with_items: repos
+  register: result
+  changed_when: result.stdout.find('enabled') != -1
+
+- name: import list 
+  set_fact:	from_file="{{ item }}"
+  with_lines:
+    - cat {{path_to_rpmlist | defautl (files/rpmlist.txt) }}
+  register: tolist
+
+- name: make a list
+  set_fact: rpm_list="{{ tolist.results | map(attribute='ansible_facts.from_file') | list }}"
+
+- name: install yum-utils
+  yum:
+    state: present
+    name: "{{item}}"
+  with_items:
+    - yum-utils
+    - createrepo
+    - httpd
+
+- name: create download file
+  file:
+    path: "{{ download_repo_path }}"
+    state: directory
+
+- name: yum (install) download-only
+  command: yum install -y --downloadonly --downloaddir={{download_repo_path}}  {{item}} -t
+  with_items: rpm_list
+  ignore_errors: true
+
+- name: yum (reinstall) download-only
+  command: yum reinstall -y --downloadonly --downloaddir={{download_repo_path}}  {{item}} -t
+  with_items: rpm_list
+  ignore_errors: true
+
+- name: create repo directory for httpd
+  file: 
+    path: "/var/www/html/{{ repo_name}}"
+    state: directory
+
+- name: copy repo files to http directory
+  copy:
+    src: "{{ download_repo_path}}/"
+    dest: "/var/www/html/{{ repo_name }}"
+    
+- name: createrepo
+  command: createrepo --basedir= "{{ download_repo_path }}"  
+
+- name: repofile to provide to node
+  template: 
+    src: repo_template.repo.j2
+    dest: "{{repofile_location}}/kragle_offline.repo"

@@ -1,0 +1,7 @@
+[Kragle_offline_repo]
+name=kragle_offline_repo
+baseurl=http://{{ansible_default_ipv4.address}}/{{shared_repo_path | relpath('/var/www/html/')}}
+enabled=1
+gpgcheck=0
+sslverify=false
+priority=1
