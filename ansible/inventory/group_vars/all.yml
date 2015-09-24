@@ -28,8 +28,8 @@ offline: true
 
 #offline Red Repository Pull variables
 
-rhn_pass:  rhn_pass
-rhn_user:  rhn_user
+rhn_pass: rhn-pass  
+rhn_user: rhn-user
 pool: 'Red Hat Enterprise Linux OpenStack Platform Developer Supported Business Partner NFR'
 
 repos:
@@ -38,7 +38,7 @@ repos:
   - rhel-server-rhscl-7-rpms
   - rhel-ha-for-rhel-7-server-rpms
   - rhel-7-server-optional-rpms
-
+download_only: true
 download_repo_path: '/root/download_repo'
 shared_repo_path: '/var/www/html/repo'
 repofile_location: '/root/'

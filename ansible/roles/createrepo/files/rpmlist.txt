@@ -1,3 +1,4 @@
+ansible-1.9.2-1.el7.noarch
 acl-2.2.51-12.el7.x86_64
 aic94xx-firmware-30-6.el7.noarch
 alsa-firmware-1.0.28-2.el7.noarch

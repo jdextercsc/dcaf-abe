@@ -13,10 +13,26 @@
   register: result
   changed_when: result.stdout.find('enabled') != -1
 
+- name: download epel
+  command: curl -O https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  args:
+    chdir: /tmp
+    creates: /tmp/epel-release-latest-7.noarch.rpm
+
+- name: install epel
+  command: yum localinstall epel-release-latest-7.noarch.rpm
+  args:
+    chdir: /tmp
+
+- name: copy rpmlist to /tmp
+  copy:
+    src: rpmlist.txt
+    dest: /tmp/rpmlist.txt
+
 - name: import list 
   set_fact:	from_file="{{ item }}"
   with_lines:
-    - cat {{path_to_rpmlist | defautl (files/rpmlist.txt) }}
+    - cat /tmp/rpmlist.txt
   register: tolist
 
 - name: make a list
@@ -50,16 +66,20 @@
   file: 
     path: "/var/www/html/{{ repo_name}}"
     state: directory
-
+  when: not download_only
+  
 - name: copy repo files to http directory
   copy:
     src: "{{ download_repo_path}}/"
     dest: "/var/www/html/{{ repo_name }}"
-    
+  when: not download_only
+
 - name: createrepo
   command: createrepo --basedir= "{{ download_repo_path }}"  
+  when: not download_only
 
 - name: repofile to provide to node
   template: 
     src: repo_template.repo.j2
     dest: "{{repofile_location}}/kragle_offline.repo"
+  when: not download_only
