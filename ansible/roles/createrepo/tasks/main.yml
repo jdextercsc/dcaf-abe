@@ -80,7 +80,7 @@
 
 - name: ensure that directory for .repo file exsist
   file:
-    dest: {{repofile_location}}
+    dest: "{{repofile_location}}"
     state: directory
 
 
