@@ -30,7 +30,7 @@
     dest: /tmp/rpmlist.txt
 
 - name: import list 
-  set_fact: "from_file="{{ item }}"
+  set_fact: from_file="{{ item }}"
   with_lines:
     - cat /tmp/rpmlist.txt
   register: tolist
