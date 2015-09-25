@@ -78,6 +78,12 @@
   command: createrepo --basedir= "{{ download_repo_path }}"  
   when: not download_only
 
+- name: ensure that directory for .repo file exsist
+  file:
+    dest: {{repofile_location}}
+    state: directory
+
+
 - name: repofile to provide to node
   template: 
     src: repo_template.repo.j2
