@@ -1,6 +1,9 @@
 # dhcpd.conf
 #
 
+include "/etc/dhcp/ipxe-option-space.conf";
+
+
 default-lease-time 600;
 max-lease-time 7200;
 
@@ -22,9 +25,5 @@ subnet {{ pxe_subnet_name }} netmask {{ pxe_subnet_mask }} {
     option hanlon_port          8026;
     option hanlon_base_uri      "/hanlon/api/v1";
 
-    if exists user-class and option user-class = "iPXE" {
-        filename "hanlon.ipxe";
-    } else {
-        filename "undionly.kpxe";
-    }
+    include "/etc/dhcp/ipxe.conf";
 }
