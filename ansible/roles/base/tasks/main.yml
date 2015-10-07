@@ -30,7 +30,7 @@
     name: docker-py
     state: present
     extra_args: "--upgrade"
-    when: not offline
+  when: not offline
 
 - name: install docker-py when offline
   pip:
