@@ -4,10 +4,26 @@
     name: dhcp
     state: present
 
-- name: setup dhcpd.conf
+- name: Configure dhcpd.conf
   template:
     src: dhcpd.conf.j2
     dest: /etc/dhcp/dhcpd.conf
+    mode: 0644
+  notify:
+  - restart dhcpd
+
+- name: Configure ipxe.conf
+  template:
+    src: ipxe.conf.j2
+    dest: /etc/dhcp/ipxe.conf
+    mode: 0644
+  notify:
+  - restart dhcpd
+
+- name: Copy ipxe-option-space.conf
+  copy:
+    src: ipxe-option-space.conf
+    dest: /etc/dhcp/ipxe-option-space.conf
     mode: 0644
   notify:
   - restart dhcpd
