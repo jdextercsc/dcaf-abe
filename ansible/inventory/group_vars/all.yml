@@ -4,7 +4,7 @@ offline: true
 py_offline_pkgs: /root/packages/
 hnl_offline_mk_source: /root/ISO/
 repo_name: "offline_repo_directory_name"
-rpm_source_directory: "/root/rpms"
+rpm_source_directory: "/root/rpms/"
 
 #Kragle common vars
 auto_deploy_node: 172.17.16.10
