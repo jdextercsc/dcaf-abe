@@ -1,8 +1,9 @@
 #!/usr/bin/python
+__author__ = 'jcallen'
 DOCUMENTATION = '''
 ---
 module: hanlon_active_model_facts
-short_description: Get the current status of the active_model associated with a host.
+short_description: Get the current status of the active_model associated with
 description:
     - A Hanlon model describes how a bare metal server operating system should be configured when provisioning
     this module adds a model to Hanlon.
@@ -64,6 +65,10 @@ def check_active_model_state(module):
             active_model = req.json()
             if 'response' in active_model:
                 if '@model' in active_model['response']:
+		    if '@label' in active_model['response']['@model']:
+			model_label = active_model['response']['@model']['@label']
+		    else:
+			model_label = ""
                     if '@current_state' in active_model['response']['@model']:
                         current_state = active_model['response']['@model']['@current_state']
                     else:
@@ -75,12 +80,14 @@ def check_active_model_state(module):
                     module.params['uuid'] = active_model['response']['@uuid']
                     module.params['current_state'] = current_state
                     module.params['node_ip'] = node_ip
+		    module.params['model_label'] = model_label
 
                     return 'present'
         elif req.status_code == 400:
             module.params['uuid'] = None
             module.params['current_state'] = None
             module.params['node_ip'] = None
+            module.params['model_label'] = None
             return 'absent'
         else:
             module.fail_json(msg="Unknown error", apierror=req.text)
@@ -96,8 +103,9 @@ def state_exit_unchanged(module):
     uuid = module.params['uuid']
     current_state = module.params['current_state']
     node_ip = module.params['node_ip']
+    model_label = module.params['model_label']
 
-    module.exit_json(changed=False, current_state=current_state, node_ip=node_ip, uuid=uuid)
+    module.exit_json(changed=False, current_state=current_state, node_ip=node_ip, uuid=uuid, model_label=model_label)
 
 
 def create_argument_spec():

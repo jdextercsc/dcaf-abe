@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 DOCUMENTATION = '''
 ---
 # If a key doesn't apply to your module (ex: choices, default, or
@@ -78,7 +79,7 @@ def state_create_policy(module):
         'template':   module.params['policy_template'],
         'label':      module.params['label'],
         'model_uuid': module.params['model_uuid'],
-        }
+    }
 
     if None in payload.values():
         module.fail_json(msg="Missing required arguments for creating a new policy.")
@@ -124,8 +125,9 @@ def hanlon_get_request(uri):
     req = requests.get(uri)
     if req.status_code == 200:
         json_result = req.json()
-        return json_result
-
+        return json_result, True
+    else:
+        return None, False
 
 def check_diff(policy_response, module):
     policy_name = module.params['label']
@@ -162,17 +164,24 @@ def check_policy_state(module):
     uri = "%s/policy" % base_url
     module.params['uuid'] = None
     state = 'absent'
-
+    
     try:
-        json_result = hanlon_get_request(uri)
+        json_result, http_success = hanlon_get_request(uri)
 
         for response in json_result['response']:
             uri = response['@uri']
-            policy = hanlon_get_request(uri)
-            policy_response = policy['response']
-            state = check_diff(policy_response, module)
-            if state is not 'absent':
-                break
+
+            # if this is run in a play concurrently with inventory
+            # objects the uri may no longer exist if the
+            # task is defined as state: absent.  If 
+            # the result is not available skip it.
+
+            policy, http_success = hanlon_get_request(uri)
+            if http_success:
+                policy_response = policy['response']
+                state = check_diff(policy_response, module)
+                if state is not 'absent':
+                    break
         return state
 
     except requests.ConnectionError as connect_error:
