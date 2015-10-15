@@ -5,4 +5,4 @@
   roles:
     - base
     - { role: createrepo, when: offline}
-  
+    - prep-projects

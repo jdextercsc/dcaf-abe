@@ -1,15 +1,24 @@
 ---
 #Offline Kragle vars
 offline: true
-py_offline_pkgs: /root/packages/
-hnl_offline_mk_source: /root/ISO/
+py_offline_pkgs: {{resources_base_path}}/packages/
+hnl_offline_mk_source: {{resources_base_path}}/ISO/
 repo_name: "offline_repo_directory_name"
-rpm_source_directory: "/root/rpms/"
+rpm_source_directory: {{resources_base_path}}/rpms/
+rpm_list: {{autodeploynode_base_path}}/wiley/files/final_rpm_list.txt
 
 #Kragle common vars
-auto_deploy_node: 172.17.16.10
+auto_deploy_node: 192.168.111.199
+autodeploynode_base_path: /opt/autodeploy/
+projects_base_path: {{autodeploynode_base_path}}/projects/
+resources_base_path: {{autodeploynode_base_path}}/resources/
+iso_path: "{{autodeploynode_base_path}}/ISO/"
+docker_path: "{{autodeploynode_base_path}}/docker/"
+rpm_path: "{{autodeploynode_base_path}}/rpms/"
+packages_path: "{{autodeploynode_base_path}}/packages/"
+scaleio_path: "{{autodeploynode_base_path}}/scaleio/"
 hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
-dns1: 192.168.70.3
+dns1: 8.8.8.8
 
 # Kragle site_discovery vars
 pxe_subnet_name: 172.17.16.0
@@ -29,4 +38,30 @@ git_repos:
   - { name: "slimer", repo: "git://github.com/csc/slimer", tag: "https://api.github.com/repos/csc/slimer/tags" }
   - { name: "kragle", repo: "git://github.com/csc/kragle", tag: "https://api.github.com/repos/csc/kragle/tags" }
   - { name: "ansible-scaleio", repo: "git://github.com/csc/ansible-scaleio", tag: "https://api.github.com/repos/csc/ansible-scaleio/tags" }
+
+#The usb variables are for offline deployments
+usb_path: /mnt/sdb/
+usb_git_path: "{{usb_path}}/git/"
+usb_iso_path: "{{usb_path}}/ISO/"
+usb_docker_path: "{{usb_path}}/docker/"
+usb_rpms_path: "{{usb_path}}/rpms/"
+usb_packages_path: "{{usb_path}}/packages/"
+usb_scaleio_path: "{{usb_path}}/scaleio/"
+
+project_files:
+  - kragle
+  - wiley
+  - slimer
+  - ansible-scaleio
+
+iso_files:
+  - hnl_mk_debug-image.2.0.1.iso
+  - rhel-server-7.1-x86_64-dvd.iso
+  - rhel-server-7.1-x86_64-dvd-hnl.iso
+  - rhel-guest-image-7.1-20150224.0.x86_64.qcow2
+
+docker_files:
+  - cscdock_hanlon.tar
+  - cscdock_atftpd.tar
+  - mongo.tar
 
