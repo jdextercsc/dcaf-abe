@@ -1,0 +1,21 @@
+---
+# This play will chack for the necessary files needed by the Wiley project. If they are not present it will
+# get them or fail with a message.
+
+- name: Check if RHEL minimized image is in the resource directory
+  stat:
+    path: "{{ iso_path }}/{{ hnl_rhel_min_image }}"
+  register: image_resource
+  failed_when: not (image_resource.stat.exists)
+
+- name: Check if RHEL minimized image is in the Hanlon image directory
+  stat:
+    path: "{{ hnl_mk_local_path }}/{{ hnl_rhel_min_image }}"
+  register: image_hanlon
+
+- name: Copy RHEL minimized image to the Hanlon image directory when offline
+  copy:
+    src: "{{ iso_path }}/{{ hnl_rhel_min_image }}"
+    dest: "{{ hnl_mk_local_path }}"
+  when: not (image_hanlon.stat.exists)
+

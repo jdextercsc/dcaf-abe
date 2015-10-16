@@ -3,7 +3,6 @@
 
 include "/etc/dhcp/ipxe-option-space.conf";
 
-
 default-lease-time 600;
 max-lease-time 7200;
 
@@ -19,9 +18,9 @@ subnet {{ pxe_subnet_name }} netmask {{ pxe_subnet_mask }} {
     option subnet-mask          {{ pxe_subnet_mask }};
     option domain-name          "{{ domain_name }}";
     option domain-name-servers  {{ dns1 }};
-    next-server                 {{ auto_deploy_node }};
-    option tftp-server-name     "{{ auto_deploy_node }}";
-    option hanlon_server        {{ auto_deploy_node }};
+    next-server                 {{ autodeploynode }};
+    option tftp-server-name     "{{ autodeploynode }}";
+    option hanlon_server        {{ autodeploynode }};
     option hanlon_port          8026;
     option hanlon_base_uri      "/hanlon/api/v1";
 

@@ -1,26 +1,26 @@
 ---
 #Offline Kragle vars
 offline: true
-py_offline_pkgs: {{resources_base_path}}/packages/
-hnl_offline_mk_source: {{resources_base_path}}/ISO/
+py_offline_pkgs: "{{ packages_path }}"
+hnl_offline_mk_source: "{{ iso_path }}"
 repo_name: "offline_repo_directory_name"
-rpm_source_directory: {{resources_base_path}}/rpms/
-rpm_list: {{autodeploynode_base_path}}/wiley/files/final_rpm_list.txt
+rpm_list: "{{ projects_base_path }}/wiley/files/final_rpm_list.txt"
 
 #Kragle common vars
-auto_deploy_node: 192.168.111.199
-autodeploynode_base_path: /opt/autodeploy/
-projects_base_path: {{autodeploynode_base_path}}/projects/
-resources_base_path: {{autodeploynode_base_path}}/resources/
-iso_path: "{{autodeploynode_base_path}}/ISO/"
-docker_path: "{{autodeploynode_base_path}}/docker/"
-rpm_path: "{{autodeploynode_base_path}}/rpms/"
-packages_path: "{{autodeploynode_base_path}}/packages/"
-scaleio_path: "{{autodeploynode_base_path}}/scaleio/"
-hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
+autodeploynode: 192.168.111.199
+autodeploy_user: kragle
+autodeploy_base_path: /opt/autodeploy
+projects_base_path: "{{ autodeploy_base_path }}/projects"
+resources_base_path: "{{ autodeploy_base_path }}/resources"
+iso_path: "{{ resources_base_path }}/ISO/"
+docker_path: "{{ resources_base_path }}/docker/"
+rpm_path: "{{ resources_base_path }}/rpms/"
+packages_path: "{{ resources_base_path }}/packages/"
+scaleio_path: "{{ resources_base_path }}/scaleio/"
+hanlon_base_url: http://{{ autodeploynode }}:8026/hanlon/api/v1/
 dns1: 8.8.8.8
 
-# Kragle site_discovery vars
+# Kragle site_discovery vars:
 pxe_subnet_name: 172.17.16.0
 pxe_subnet_mask: 255.255.255.0
 pxe_gateway: 172.17.16.1
@@ -28,7 +28,10 @@ pxe_dhcp_range_start: 172.17.16.20
 pxe_dhcp_range_end: 172.17.16.50
 domain_name: lordbusiness
 
+rhel_iso_image: rhel-server-7.1-x86_64-dvd.iso
+kvm_guest_image: rhel-guest-image-7.1-20150224.0.x86_64.qcow2
 hnl_mk_image: hnl_mk_debug-image.2.0.1.iso
+hnl_rhel_min_image: rhel-server-7.1-x86_64-dvd-hnl.iso
 hnl_mk_source: https://github.com/csc/Hanlon-Microkernel/releases/download/v2.0.1/
 hnl_mk_local_path: /opt/hanlon/image/
 hnl_mk_path: /home/hanlon/image/{{ hnl_mk_image }}
@@ -41,12 +44,13 @@ git_repos:
 
 #The usb variables are for offline deployments
 usb_path: /mnt/sdb/
-usb_git_path: "{{usb_path}}/git/"
-usb_iso_path: "{{usb_path}}/ISO/"
-usb_docker_path: "{{usb_path}}/docker/"
-usb_rpms_path: "{{usb_path}}/rpms/"
-usb_packages_path: "{{usb_path}}/packages/"
-usb_scaleio_path: "{{usb_path}}/scaleio/"
+usb_resources_path: "{{ usb_path }}/resources/"
+usb_projects_path: "{{ usb_path }}/projects/"
+usb_iso_path: "{{ usb_resources_path }}/ISO/"
+usb_docker_path: "{{ usb_resources_path }}/docker/"
+usb_rpms_path: "{{ usb_resources_path }}/rpms/"
+usb_packages_path: "{{ usb_resources_path }}/packages/"
+usb_scaleio_path: "{{ usb_resources_path }}/scaleio/"
 
 project_files:
   - kragle

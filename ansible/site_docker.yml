@@ -22,7 +22,7 @@
         - { name: hanlon-atftpd, image: cscdock/atftpd }
 
     - name: Load Mongo, Hanlon and Atftpd Containers Offline
-      command: docker load --input /root/docker/{{ item }}
+      command: docker load --input "{{docker_path}}/{{ item }}"
       with_items:
         - mongo.tar
         - cscdock_hanlon.tar

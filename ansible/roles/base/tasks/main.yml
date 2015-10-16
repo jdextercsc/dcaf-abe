@@ -122,7 +122,7 @@
 - name: clone repos from git
   git:
     repo: "{{ item.item.repo }}"
-    dest: "/root/{{ item.item.name }}"
+    dest: "{{projects_base_path}}/{{ item.item.name }}"
     accept_hostkey: yes
     version: "{{ item.json[0].name }}"
   ignore_errors: true
