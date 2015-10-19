@@ -23,10 +23,7 @@
 
     - name: Load Mongo, Hanlon and Atftpd Containers Offline
       command: docker load --input "{{docker_path}}/{{ item }}"
-      with_items:
-        - mongo.tar
-        - cscdock_hanlon.tar
-        - cscdock_atftpd.tar
+      with_items: docker_files
       when: offline
 
     - name: Start Mongo Container

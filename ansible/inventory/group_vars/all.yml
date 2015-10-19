@@ -1,10 +1,11 @@
 ---
 #Offline Kragle vars
 offline: true
+use_scaleio: true
+use_wiley: true
 py_offline_pkgs: "{{ packages_path }}"
 hnl_offline_mk_source: "{{ iso_path }}"
 repo_name: "offline_repo_directory_name"
-rpm_list: "{{ projects_base_path }}/wiley/files/final_rpm_list.txt"
 
 #Kragle common vars
 autodeploynode: 192.168.111.199
@@ -14,7 +15,9 @@ projects_base_path: "{{ autodeploy_base_path }}/projects"
 resources_base_path: "{{ autodeploy_base_path }}/resources"
 iso_path: "{{ resources_base_path }}/ISO/"
 docker_path: "{{ resources_base_path }}/docker/"
+rpm_file: final-rpm-list.txt
 rpm_path: "{{ resources_base_path }}/rpms/"
+rpm_list: "{{ projects_base_path }}/wiley/files/{{ rpm_file }}"
 packages_path: "{{ resources_base_path }}/packages/"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
 hanlon_base_url: http://{{ autodeploynode }}:8026/hanlon/api/v1/
@@ -52,6 +55,23 @@ usb_rpms_path: "{{ usb_resources_path }}/rpms/"
 usb_packages_path: "{{ usb_resources_path }}/packages/"
 usb_scaleio_path: "{{ usb_resources_path }}/scaleio/"
 
+kragle_support_pkgs:
+  - bridge-utils
+  - dhcp
+  - docker
+  - ipmitool
+  - iptables-services
+  - ntp
+  - python-passlib
+  - python-pip
+  - sshpass
+  - vim
+  - wget
+  - httpd
+  - createrepo
+  - yum-utils
+  - unzip
+
 project_files:
   - kragle
   - wiley
@@ -68,4 +88,3 @@ docker_files:
   - cscdock_hanlon.tar
   - cscdock_atftpd.tar
   - mongo.tar
-

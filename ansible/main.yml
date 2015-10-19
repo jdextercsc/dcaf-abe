@@ -6,4 +6,3 @@
     - base
     - { role: createrepo, when: offline }
     - prep-projects
-    - { role: verify-files, when: offline }
