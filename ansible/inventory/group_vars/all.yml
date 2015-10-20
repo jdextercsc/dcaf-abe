@@ -8,7 +8,7 @@ hnl_offline_mk_source: "{{ iso_path }}"
 repo_name: "offline_repo_directory_name"
 
 #Kragle common vars
-autodeploynode: 192.168.111.199
+auto_deploy_node: 192.168.111.199
 autodeploy_user: kragle
 autodeploy_base_path: /opt/autodeploy
 projects_base_path: "{{ autodeploy_base_path }}/projects"
@@ -20,7 +20,7 @@ rpm_path: "{{ resources_base_path }}/rpms/"
 rpm_list: "{{ projects_base_path }}/wiley/files/{{ rpm_file }}"
 packages_path: "{{ resources_base_path }}/packages/"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
-hanlon_base_url: http://{{ autodeploynode }}:8026/hanlon/api/v1/
+hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
 dns1: 8.8.8.8
 
 # Kragle site_discovery vars:
@@ -79,10 +79,10 @@ project_files:
   - ansible-scaleio
 
 iso_files:
-  - hnl_mk_debug-image.2.0.1.iso
-  - rhel-server-7.1-x86_64-dvd.iso
-  - rhel-server-7.1-x86_64-dvd-hnl.iso
-  - rhel-guest-image-7.1-20150224.0.x86_64.qcow2
+  - "{{ hnl_mk_image }}"
+  - "{{ rhel_iso_image }}"
+  - "{{ hnl_rhel_min_image }}"
+  - "{{ kvm_guest_image }}"
 
 docker_files:
   - cscdock_hanlon.tar
