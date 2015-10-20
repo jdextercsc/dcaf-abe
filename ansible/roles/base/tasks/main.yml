@@ -18,6 +18,7 @@
     - ntp
     - python-passlib
     - python-pip
+    - python-netaddr
     - sshpass
     - vim
     - wget
