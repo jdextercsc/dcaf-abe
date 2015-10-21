@@ -1,4 +1,5 @@
 ---
+# This base will do the inital preparation of the autodeploynode.
 - name: install updates
   yum:
     name: "*"
@@ -9,21 +10,7 @@
   yum:
     pkg: "{{ item }}"
     state: present
-  with_items:
-    - bridge-utils
-    - dhcp
-    - docker
-    - ipmitool
-    - iptables-services
-    - ntp
-    - python-passlib
-    - python-pip
-    - sshpass
-    - vim
-    - wget
-    - httpd
-    - createrepo
-    - yum-utils
+  with_items: kragle_support_pkgs
 
 - name: install docker-py
   pip:
@@ -121,7 +108,7 @@
 - name: clone repos from git
   git:
     repo: "{{ item.item.repo }}"
-    dest: "/root/{{ item.item.name }}"
+    dest: "{{projects_base_path}}/{{ item.item.name }}"
     accept_hostkey: yes
     version: "{{ item.json[0].name }}"
   ignore_errors: true

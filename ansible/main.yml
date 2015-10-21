@@ -4,5 +4,5 @@
   gather_facts: true
   roles:
     - base
-    - { role: createrepo, when: offline}
-  
+    - { role: createrepo, when: offline }
+    - prep-projects

@@ -6,7 +6,7 @@
 
 - name: copy repo files to http directory
   copy:
-    src: "{{ rpm_source_directory }}/"
+    src: "{{ rpm_path }}/"
     dest: "/var/www/html/{{ repo_name }}"
 
 - name: createrepo
@@ -15,7 +15,7 @@
 - name: repofile to provide to node
   template:
     src: repo_template.repo.j2
-    dest: "/var/www/html/offline.repo"
+    dest: "/var/www/html/{{ repo_name }}/offline.repo"
 
 - name: start httpd
   service:

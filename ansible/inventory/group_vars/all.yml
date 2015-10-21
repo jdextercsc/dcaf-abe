@@ -1,25 +1,40 @@
 ---
 #Offline Kragle vars
 offline: true
-py_offline_pkgs: /root/packages/
-hnl_offline_mk_source: /root/ISO/
+use_scaleio: true
+use_wiley: true
+py_offline_pkgs: "{{ packages_path }}"
+hnl_offline_mk_source: "{{ iso_path }}"
 repo_name: "offline_repo_directory_name"
-rpm_source_directory: "/root/rpms/"
 
 #Kragle common vars
-auto_deploy_node: 172.17.16.10
+auto_deploy_node: x.x.x.x
+dns1: x.x.x.x
+autodeploy_user: autodeploy
+autodeploy_base_path: /opt/autodeploy
+projects_base_path: "{{ autodeploy_base_path }}/projects"
+resources_base_path: "{{ autodeploy_base_path }}/resources"
+iso_path: "{{ resources_base_path }}/ISO/"
+docker_path: "{{ resources_base_path }}/docker/"
+rpm_file: final-rpm-list.txt
+rpm_path: "{{ resources_base_path }}/rpms/"
+rpm_list: "{{ projects_base_path }}/kragle/ansible/files/{{ rpm_file }}"
+packages_path: "{{ resources_base_path }}/packages/"
+scaleio_path: "{{ resources_base_path }}/scaleio/"
 hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
-dns1: 192.168.70.3
 
-# Kragle site_discovery vars
-pxe_subnet_name: 172.17.16.0
-pxe_subnet_mask: 255.255.255.0
-pxe_gateway: 172.17.16.1
-pxe_dhcp_range_start: 172.17.16.20
-pxe_dhcp_range_end: 172.17.16.50
-domain_name: lordbusiness
+# Kragle site_discovery vars:
+pxe_subnet_name: x.x.x.x
+pxe_subnet_mask: x.x.x.x
+pxe_gateway: x.x.x.x
+pxe_dhcp_range_start: x.x.x.x
+pxe_dhcp_range_end: x.x.x.x
+domain_name: localdomain
 
+rhel_iso_image: rhel-server-7.1-x86_64-dvd.iso
+kvm_guest_image: rhel-guest-image-7.1-20150224.0.x86_64.qcow2
 hnl_mk_image: hnl_mk_debug-image.2.0.1.iso
+hnl_rhel_min_image: rhel-server-7.1-x86_64-dvd-hnl.iso
 hnl_mk_source: https://github.com/csc/Hanlon-Microkernel/releases/download/v2.0.1/
 hnl_mk_local_path: /opt/hanlon/image/
 hnl_mk_path: /home/hanlon/image/{{ hnl_mk_image }}
@@ -30,3 +45,45 @@ git_repos:
   - { name: "kragle", repo: "git://github.com/csc/kragle", tag: "https://api.github.com/repos/csc/kragle/tags" }
   - { name: "ansible-scaleio", repo: "git://github.com/csc/ansible-scaleio", tag: "https://api.github.com/repos/csc/ansible-scaleio/tags" }
 
+#The usb variables are for offline deployments
+usb_path: /mnt/sdb/
+usb_resources_path: "{{ usb_path }}/resources/"
+usb_projects_path: "{{ usb_path }}/projects/"
+usb_iso_path: "{{ usb_resources_path }}/ISO/"
+usb_docker_path: "{{ usb_resources_path }}/docker/"
+usb_rpms_path: "{{ usb_resources_path }}/rpms/"
+usb_packages_path: "{{ usb_resources_path }}/packages/"
+usb_scaleio_path: "{{ usb_resources_path }}/scaleio/"
+
+kragle_support_pkgs:
+  - dhcp
+  - docker
+  - ipmitool
+  - iptables-services
+  - ntp
+  - python-passlib
+  - python-pip
+  - sshpass
+  - vim
+  - wget
+  - httpd
+  - createrepo
+  - yum-utils
+  - unzip
+
+project_files:
+  - kragle
+  - wiley
+  - slimer
+  - ansible-scaleio
+
+iso_files:
+  - "{{ hnl_mk_image }}"
+  - "{{ rhel_iso_image }}"
+  - "{{ hnl_rhel_min_image }}"
+  - "{{ kvm_guest_image }}"
+
+docker_files:
+  - cscdock_hanlon.tar
+  - cscdock_atftpd.tar
+  - mongo.tar
