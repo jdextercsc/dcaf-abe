@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 DOCUMENTATION = '''
 ---
 module: hanlon_image
@@ -116,7 +117,9 @@ def hanlon_get_request(uri):
     req = requests.get(uri)
     if req.status_code == 200:
         json_result = req.json()
-        return json_result
+        return json_result, True
+    else:
+        return None, False
 
 
 def check_image_state(module):
@@ -129,16 +132,16 @@ def check_image_state(module):
     filename = path_split[len(path_split)-1]
 
     try:
-        json_result = hanlon_get_request(uri)
+        json_result, http_success = hanlon_get_request(uri)
 
         for response in json_result['response']:
             uri = response['@uri']
-            image = hanlon_get_request(uri)
-            image_response = image['response']
-
-            if image_response.get('@filename') == filename:
-                module.params['uuid'] = image_response['@uuid']
-                return 'present'
+            image, http_success = hanlon_get_request(uri)
+            if http_success:
+                image_response = image['response']
+                if image_response.get('@filename') == filename:
+                    module.params['uuid'] = image_response['@uuid']
+                    return 'present'
         return 'absent'
     except requests.ConnectionError as connect_error:
         module.fail_json(msg="Connection Error; confirm Hanlon base_url.", apierror=str(connect_error))
@@ -173,7 +176,7 @@ def main():
         'present': {
             'absent': state_create_image,
             'present': state_exit_unchanged,
-            }
+        }
     }
     image_state = check_image_state(module)
 

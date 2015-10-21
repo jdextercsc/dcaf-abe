@@ -4,8 +4,8 @@ DOCUMENTATION = '''
 module: hanlon_model
 short_description: Add a new model to Hanlon
 description:
-    - A Hanlon model describes how a bare metal server operating system should be configured when provisioned.
-    This module adds a model to Hanlon.
+    - A Hanlon model describes how a bare metal server operating system should be configured when provisioning
+    this module adds a model to Hanlon.
 version_added: 2.0
 author: Joseph Callen
 requirements:
@@ -237,7 +237,9 @@ def hanlon_get_request(uri):
     req = requests.get(uri)
     if req.status_code == 200:
         json_result = req.json()
-        return json_result
+        return json_result, True
+    else:
+        return None, False 
 
 
 def check_model_state(module):
@@ -246,14 +248,15 @@ def check_model_state(module):
 
     uri = "%s/model" % base_url
     try:
-        json_result = hanlon_get_request(uri)
+        json_result, http_success = hanlon_get_request(uri)
 
         for response in json_result['response']:
             uri = response['@uri']
-            model = hanlon_get_request(uri)
-            model_response = model['response']
-            if model_response['@label'] == model_name:
-                return 'present', model_response['@uuid']
+            model, http_success = hanlon_get_request(uri)
+            if http_success:
+                model_response = model['response']
+                if model_response['@label'] == model_name:
+                    return 'present', model_response['@uuid']
     except requests.ConnectionError as connect_error:
         module.fail_json(msg="Connection Error; confirm Hanlon base_url.", apierror=str(connect_error))
     except requests.Timeout as timeout_error:
