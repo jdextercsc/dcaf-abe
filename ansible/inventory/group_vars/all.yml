@@ -8,8 +8,9 @@ hnl_offline_mk_source: "{{ iso_path }}"
 repo_name: "offline_repo_directory_name"
 
 #Kragle common vars
-auto_deploy_node: 192.168.111.199
-autodeploy_user: kragle
+auto_deploy_node: x.x.x.x
+dns1: x.x.x.x
+autodeploy_user: autodeploy
 autodeploy_base_path: /opt/autodeploy
 projects_base_path: "{{ autodeploy_base_path }}/projects"
 resources_base_path: "{{ autodeploy_base_path }}/resources"
@@ -17,19 +18,18 @@ iso_path: "{{ resources_base_path }}/ISO/"
 docker_path: "{{ resources_base_path }}/docker/"
 rpm_file: final-rpm-list.txt
 rpm_path: "{{ resources_base_path }}/rpms/"
-rpm_list: "{{ projects_base_path }}/wiley/files/{{ rpm_file }}"
+rpm_list: "{{ projects_base_path }}/kragle/ansible/files/{{ rpm_file }}"
 packages_path: "{{ resources_base_path }}/packages/"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
 hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
-dns1: 8.8.8.8
 
 # Kragle site_discovery vars:
-pxe_subnet_name: 172.17.16.0
-pxe_subnet_mask: 255.255.255.0
-pxe_gateway: 172.17.16.1
-pxe_dhcp_range_start: 172.17.16.20
-pxe_dhcp_range_end: 172.17.16.50
-domain_name: lordbusiness
+pxe_subnet_name: x.x.x.x
+pxe_subnet_mask: x.x.x.x
+pxe_gateway: x.x.x.x
+pxe_dhcp_range_start: x.x.x.x
+pxe_dhcp_range_end: x.x.x.x
+domain_name: localdomain
 
 rhel_iso_image: rhel-server-7.1-x86_64-dvd.iso
 kvm_guest_image: rhel-guest-image-7.1-20150224.0.x86_64.qcow2
@@ -56,7 +56,6 @@ usb_packages_path: "{{ usb_resources_path }}/packages/"
 usb_scaleio_path: "{{ usb_resources_path }}/scaleio/"
 
 kragle_support_pkgs:
-  - bridge-utils
   - dhcp
   - docker
   - ipmitool
