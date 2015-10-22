@@ -23,7 +23,7 @@
 
     - name: Copy Hanlon Microkernel to /opt/hanlon/image
       copy:
-        src: "{{ hnl_mk_source }}{{ hnl_mk_image }}"
+        src: "{{ iso_path }}{{ hnl_mk_image }}"
         dest: "{{ hnl_mk_local_path }}"
       when: offline
 
