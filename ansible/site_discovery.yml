@@ -1,5 +1,6 @@
 ---
-# This playbook sets up the environment for discovery of all nodes
+# This playbook will prepare the autodeploynode for discovery of all nodes.
+
 - name: Configure deployment node for site discovery
   hosts: localhost
   vars:
@@ -22,10 +23,10 @@
 
     - name: Copy Hanlon Microkernel to /opt/hanlon/image
       copy:
-        src: "{{ hnl_offline_mk_source }}{{ hnl_mk_image }}"
+        src: "{{ hnl_mk_source }}{{ hnl_mk_image }}"
         dest: "{{ hnl_mk_local_path }}"
       when: offline
-      
+
     - name: Add a Microkernel Image to Hanlon
       hanlon_image:
         base_url: "{{ hanlon_base_url }}"

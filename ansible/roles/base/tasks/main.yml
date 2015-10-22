@@ -1,32 +1,34 @@
 ---
-# This base will do the inital preparation of the autodeploynode.
-- name: install updates
+# The base role will do the initial preparation of the autodeploynode.
+
+- name: Install package updates
   yum:
     name: "*"
     state: latest
   ignore_errors: true
+  when: not offline
 
-- name: install support packages
+- name: Install required support packages
   yum:
     pkg: "{{ item }}"
     state: present
-  with_items: kragle_support_pkgs
+  with_items: autodeploy_support_pkgs
 
-- name: install docker-py
+- name: Install docker-py with pip
   pip:
     name: docker-py
     state: present
     extra_args: "--upgrade"
   when: not offline
 
-- name: install docker-py when offline
+- name: Install docker-py with pip when offline
   pip:
     name: docker-py
     state: present
-    extra_args: "--index-url=file://{{ py_offline_pkgs }}simple/"
+    extra_args: "--index-url=file://{{ packages_path }}simple/"
   when: offline
 
-- name: create .ssh directory
+- name: Create the .ssh directory
   file:
     path: /root/.ssh/
     state: directory
@@ -36,7 +38,7 @@
     name: root
     generate_ssh_key: yes
 
-- name: copy .ssh/config
+- name: Copy the .ssh/config file
   copy:
     src: config
     dest: /root/.ssh/config
@@ -51,13 +53,13 @@
     user: root
     key: "{{ pub_key.stdout }}"
 
-- name: disable firewalld
+- name: Disable firewalld
   service:
     name: firewalld
     state: stopped
     enabled: no
 
-- name: create directories for hanlon
+- name: Create directories for hanlon
   file:
     path: "{{ item }}"
     state: directory
@@ -82,12 +84,12 @@
     line: "restrict default limited kod nomodify notrap nopeer noquery"
     state: present
 
-- name: copy iptables config file
+- name: Copy the iptables config file
   copy:
     src: iptables
     dest: /etc/sysconfig/iptables
 
-- name: start & enable services
+- name: Start & enable iptables, ntpd & docker
   service:
     name: "{{ item }}"
     enabled: yes
@@ -97,7 +99,7 @@
     - ntpd
     - docker
 
-- name: get latest tags
+- name: Get latest tagged version of Git repos
   uri:
     url: "{{ item.tag }}"
     method: GET
@@ -105,10 +107,10 @@
   register: tags
   when: not offline
 
-- name: clone repos from git
+- name: Clone source Git repos
   git:
     repo: "{{ item.item.repo }}"
-    dest: "{{projects_base_path}}/{{ item.item.name }}"
+    dest: "{{ projects_base_path }}/{{ item.item.name }}"
     accept_hostkey: yes
     version: "{{ item.json[0].name }}"
   ignore_errors: true
