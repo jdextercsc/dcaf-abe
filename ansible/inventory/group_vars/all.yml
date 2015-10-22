@@ -1,43 +1,54 @@
 ---
-#Offline Kragle vars
+# Offline autodeploy vars
 offline: true
+repo_name: "offline_repo_directory_name"
 use_scaleio: true
 use_wiley: true
-py_offline_pkgs: "{{ packages_path }}"
-hnl_offline_mk_source: "{{ iso_path }}"
-repo_name: "offline_repo_directory_name"
 
-#Kragle common vars
+# Autodeploy common vars
 auto_deploy_node: x.x.x.x
-dns1: x.x.x.x
 autodeploy_user: autodeploy
 autodeploy_base_path: /opt/autodeploy
+dns1: x.x.x.x
+docker_api_version: 1.18
+docker_path: "{{ resources_base_path }}/docker/"
+hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
+iso_path: "{{ resources_base_path }}/ISO/"
+packages_path: "{{ resources_base_path }}/packages/"
 projects_base_path: "{{ autodeploy_base_path }}/projects"
 resources_base_path: "{{ autodeploy_base_path }}/resources"
-iso_path: "{{ resources_base_path }}/ISO/"
-docker_path: "{{ resources_base_path }}/docker/"
 rpm_file: final-rpm-list.txt
 rpm_path: "{{ resources_base_path }}/rpms/"
 rpm_list: "{{ projects_base_path }}/kragle/ansible/files/{{ rpm_file }}"
-packages_path: "{{ resources_base_path }}/packages/"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
-hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
 
-# Kragle site_discovery vars:
-pxe_subnet_name: x.x.x.x
-pxe_subnet_mask: x.x.x.x
-pxe_gateway: x.x.x.x
+# Autodeploy site_discovery vars:
+domain_name: localdomain
 pxe_dhcp_range_start: x.x.x.x
 pxe_dhcp_range_end: x.x.x.x
-domain_name: localdomain
+pxe_gateway: x.x.x.x
+pxe_subnet_mask: x.x.x.x
+pxe_subnet_name: x.x.x.x
 
-rhel_iso_image: rhel-server-7.1-x86_64-dvd.iso
-kvm_guest_image: rhel-guest-image-7.1-20150224.0.x86_64.qcow2
 hnl_mk_image: hnl_mk_debug-image.2.0.1.iso
 hnl_rhel_min_image: rhel-server-7.1-x86_64-dvd-hnl.iso
 hnl_mk_source: https://github.com/csc/Hanlon-Microkernel/releases/download/v2.0.1/
 hnl_mk_local_path: /opt/hanlon/image/
 hnl_mk_path: /home/hanlon/image/{{ hnl_mk_image }}
+kvm_guest_image: rhel-guest-image-7.1-20150224.0.x86_64.qcow2
+rhel_iso_image: rhel-server-7.1-x86_64-dvd.iso
+
+# Offline Staging vars
+git_user:
+git_pass:
+private_git_repo: wiley
+private_git_url: https://github.com/csc/wiley/archive/v0.1.2.tar.gz
+rhel_download_url: https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.1/x86_64/product-downloads
+rhn_user:
+rhn_pass:
+pool:
+scaleio_source_zip: ScaleIO_1.32.2_Linux_SW_Download.zip
+scaleio_source_url: "http://downloads.emc.com/emc-com/usa/ScaleIO/{{scaleio_source_zip}}"
 
 git_repos:
 #  - { name: "wiley", repo: "git://github.com/csc/wiley", tag: "https://api.github.com/repos/csc/wiley/tags" }
@@ -45,31 +56,41 @@ git_repos:
   - { name: "kragle", repo: "git://github.com/csc/kragle", tag: "https://api.github.com/repos/csc/kragle/tags" }
   - { name: "ansible-scaleio", repo: "git://github.com/csc/ansible-scaleio", tag: "https://api.github.com/repos/csc/ansible-scaleio/tags" }
 
-#The usb variables are for offline deployments
-usb_path: /mnt/sdb/
-usb_resources_path: "{{ usb_path }}/resources/"
-usb_projects_path: "{{ usb_path }}/projects/"
-usb_iso_path: "{{ usb_resources_path }}/ISO/"
+# Offline usb staging vars
+usb_path: /mnt/sdb/autodeploy
+usb_projects_path: "{{ usb_path }}/projects"
+usb_resources_path: "{{ usb_path }}/resources"
 usb_docker_path: "{{ usb_resources_path }}/docker/"
-usb_rpms_path: "{{ usb_resources_path }}/rpms/"
+usb_iso_path: "{{ usb_resources_path }}/ISO/"
 usb_packages_path: "{{ usb_resources_path }}/packages/"
+usb_rpm_list: "{{ usb_projects_path }}/kragle/ansible/files/{{ rpm_file }}"
+usb_rpms_path: "{{ usb_resources_path }}/rpms/"
 usb_scaleio_path: "{{ usb_resources_path }}/scaleio/"
 
-kragle_support_pkgs:
+autodeploy_support_pkgs:
+  - createrepo
   - dhcp
   - docker
+  - firefox
+  - httpd
   - ipmitool
   - iptables-services
   - ntp
+  - python-ipaddr
   - python-passlib
   - python-pip
+  - python-xvfbwrapper
   - sshpass
+  - unzip
   - vim
   - wget
-  - httpd
-  - createrepo
+  - xorg-x11-server-Xvfb
   - yum-utils
-  - unzip
+
+pip_pkgs:
+  - docker-py
+  - pip2pi
+  - selenium
 
 project_files:
   - kragle
