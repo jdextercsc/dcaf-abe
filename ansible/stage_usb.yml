@@ -7,7 +7,7 @@
   hosts: localhost
 
   vars_files:
-    - /opt/autodeploy/projects/kragle/ansible/inventory/group_vars/all.yml
+    - /mnt/sdb/autodeploy/projects/kragle/ansible/inventory/group_vars/all.yml
 
   tasks:
 
