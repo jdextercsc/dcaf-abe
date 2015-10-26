@@ -1,24 +1,21 @@
 ---
-# This playbook will prepare the staging node and retrieve the automation resources for the autodeploynode.
-# The resources will be staged on a usb drive in ../autodeploy/projects and ../autodeploy/resources directories.
+# This playbook will prepare the staging directories and retrieve the automation resources for the autodeploynode.
+# The resources will be staged locally in the /opt/autodeploy/projects/ and opt/autodeploy/resources/ directories.
 
-- name: Prepare the staging node
+- name: Prepare the staging resources
   gather_facts: true
   hosts: localhost
 
-  vars_files:
-    - /mnt/sdb/autodeploy/projects/kragle/ansible/inventory/group_vars/all.yml
-
   tasks:
 
-    - name: install support packages
+    - name: Install required support packages
       yum:
         pkg: "{{ item }}"
         state: present
       with_items: autodeploy_support_pkgs
       tags: pkgs
 
-    - name: install support packages with pip
+    - name: Install required pip-based support packages
       pip:
         name: "{{ item }}"
         state: present
@@ -26,42 +23,36 @@
       with_items: pip_pkgs
       tags: pkgs
 
-    - name: Create the staging directories on the usb hard drive
+    - name: Create the staging directories in /opt/autodeploy
       file:
         path: "{{ item }}"
         state: directory
-        owner: "{{ autodeploy_user }}"
       with_items:
-        - "{{ usb_projects_path }}"
-        - "{{ usb_resources_path }}"
+        - "{{ projects_base_path }}"
+        - "{{ resources_base_path }}"
       tags: paths
 
     - name: Create the resource directories in the staging directories
       file:
-        path: "{{ item }}"
+        path: "{{ resources_base_path }}/{{ item }}"
         state: directory
-      with_items:
-        - "{{ usb_docker_path }}"
-        - "{{ usb_iso_path }}"
-        - "{{ usb_packages_path }}"
-        - "{{ usb_rpm_path }}"
-        - "{{ usb_scaleio_path }}"
+      with_items: resource_dirs
       tags: paths
 
-    - name: Download the private project repo from Git
+    - name: Download the private project repo from Git to /opt/autodeploy/projects
       selenium:
         url: "{{ private_git_url }}"
         username: "{{ git_user }}"
         password: "{{ git_pass }}"
         username_element_id: login_field
         password_element_id: password
-        download_directory: "{{ usb_projects_path }}/wiley/"
+        download_directory: "{{ projects_base_path }}/wiley/"
       tags: git
 
-    - name: Download the Hanlon microkernel image
+    - name: Download the Hanlon microkernel image to /opt/autodeploy/resources/ISO
       get_url:
         url: "{{ hnl_mk_source }}{{ hnl_mk_image }}"
-        dest: "{{ usb_iso_path }}"
+        dest: "{{ iso_path }}"
       tags: iso
 
 # There two separate selenium downloads here because the authtoken on the link will time out
@@ -76,10 +67,10 @@
       register: rhel_get_url
       tags: iso
 
-    - name: Download the RHEL DVD ISO file
+    - name: Download the RHEL DVD ISO file to /opt/autodeploy/resources/ISO
       get_url:
         url: "{{ rhel_get_url.url }}"
-        dest: "{{ usb_iso_path }}"
+        dest: "{{ iso_path }}"
       tags: iso
 
 # There two separate selenium downloads here because the authtoken on the link will time out
@@ -94,26 +85,30 @@
       register: kvm_get_url
       tags: iso
 
-    - name: Download the KVM Guest Image file
+    - name: Download the KVM Guest Image file to /opt/autodeploy/resources/ISO
       get_url:
         url: "{{ kvm_get_url.url }}"
-        dest: "{{ usb_iso_path }}"
+        dest: "{{ iso_path }}"
       tags: iso
 
-    - name: Download the Red Hat RPMs
-      shell: yumdownloader --downloadonly --destdir={{ usb_rpm_path }} $(cat {{ usb_rpm_list }})
+    - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms
+      shell: yumdownloader --downloadonly --destdir={{ rpm_path }} $(cat {{ rpm_list }})
+      when: offline
       tags: repo
 
-    - name: Create the local offline repository
-      command: createrepo "{{ usb_rpm_path }}"
+    - name: Create the local offline repository in /opt/autodeploy/resources/rpms
+      command: createrepo "{{ rpm_path }}"
+      when: offline
       tags: repo
 
-    - name: Mirror docker-py and its dependencies
-      command: pip2tgz "{{ usb_packages_path }}" docker-py
+    - name: Mirror docker-py and its dependencies to /opt/autodeploy/resources/packages
+      command: pip2tgz "{{ packages_path }}" docker-py
+      when: offline
       tags: docker
 
-    - name: Create the PyPi-compatible "simple" package
-      command: dir2pi "{{ usb_packages_path }}"
+    - name: Create the PyPi-compatible "simple" package in /opt/autodeploy/resources/packages
+      command: dir2pi "{{ packages_path }}"
+      when: offline
       tags: docker
 
     - name: Start and enable the docker service
@@ -136,16 +131,33 @@
         - { name: hanlon-atftpd, image: cscdock/atftpd }
       tags: docker
 
-    - name: Save container image to usb drive
-      shell: docker save docker.io/"{{ item.image }}" > "{{ usb_docker_path }}/{{ item.tar_file }}"
+    - name: Save docker container images to /opt/autodeploy/resources/docker
+      shell: docker save docker.io/"{{ item.image }}" > "{{ docker_path }}/{{ item.tar_file }}"
       with_items:
         - { image: cscdock/hanlon, tar_file: cscdock_hanlon.tar }
         - { image: cscdock/atftpd, tar_file: cscdock_atftpd.tar }
         - { image: mongo, tar_file: mongo.tar }
+      when: offline
       tags: docker
 
-    - name: Download ScaleIO files for ansible-scaleio project
+    - name: Download ScaleIO files for ansible-scaleio to /opt/autodeploy/resources/scaleio
       get_url:
         url: "{{ scaleio_source_url }}"
-        dest: "{{ usb_scaleio_path }}"
+        dest: "{{ scaleio_path }}"
       tags: scaleio
+
+    - name: Copy the downloaded projects to the usb drive
+      copy:
+        src: "{{ projects_base_path }}/{{ item }}"
+        dest: "{{ usb_projects_path }}"
+      with_items: source_projects
+      when : offline
+      tags: copy
+
+    - name: Copy the downloaded resources to the usb drive
+      copy:
+        src: "{{ resources_base_path }}/{{ item }}"
+        dest: "{{ usb_resources_path }}"
+      with_items: resource_dirs
+      when: offline
+      tags: copy

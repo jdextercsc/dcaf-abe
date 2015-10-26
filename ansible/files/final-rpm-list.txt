@@ -150,6 +150,7 @@ findutils-4.5.11-3.el7.x86_64
 fipscheck-1.4.1-5.el7.x86_64
 fipscheck-lib-1.4.1-5.el7.x86_64
 firewalld-0.3.9-11.el7.noarch
+firefox-38.3.0-2.el7_1.x86_64
 flac-libs-1.3.0-5.el7_1.x86_64
 fontawesome-fonts-4.1.0-2.el7ost.noarch
 fontawesome-fonts-web-4.1.0-2.el7ost.noarch
@@ -793,6 +794,7 @@ python-XStatic-JSEncrypt-2.0.0.2-2.el7ost.noarch
 python-XStatic-QUnit-1.14.0.2-2.el7ost.noarch
 python-XStatic-Rickshaw-1.5.0.0-3.el7ost.noarch
 python-XStatic-Spin-1.2.5.2-2.el7ost.noarch
+python-xvfbwrapper-0.2.4-2.el7.noarch
 pytz-2012d-5.el7.noarch
 pyxattr-0.5.1-5.el7.x86_64
 PyYAML-3.10-11.el7.x86_64
@@ -882,6 +884,7 @@ trousers-0.3.11.2-4.el7_1.x86_64
 tuned-2.4.1-1.el7.noarch
 tzdata-2015f-1.el7.noarch
 unbound-libs-1.4.20-19.el7.x86_64
+unzip-6.0-15.el7.x86_64
 urw-fonts-2.4-16.el7.noarch
 usbredir-0.6-7.el7.x86_64
 usermode-1.111-5.el7.x86_64
@@ -902,6 +905,7 @@ xfsprogs-3.2.1-6.el7.x86_64
 xinetd-2.3.15-12.el7.x86_64
 xorg-x11-font-utils-7.5-18.1.el7.x86_64
 xorg-x11-server-common-1.15.0-33.el7_1.x86_64
+xorg-x11-server-Xvfb-1.15.0-33.el7_1.x86_64
 xorg-x11-xauth-1.0.7-6.1.el7.x86_64
 xz-5.1.2-9alpha.el7.x86_64
 xz-libs-5.1.2-9alpha.el7.x86_64
