@@ -1,14 +1,16 @@
 ---
-#The prep-scaleio play will take the scaleio software zip file, extract and copy the files
-#to the ansible-scaleio project directories as needed.
+# The prep-scaleio play will take the scaleio software zip file, extract and copy the files
+# to the ansible-scaleio project directories as needed.
 
-- name: Check if ScaleIO files exist
+- name: Check if ScaleIO zip file exist in /opt/autodeploy/resources/scaleio
   stat:
     path: "{{ scaleio_path }}/{{ scaleio_source_zip }}"
   register: scaleio_zip
 
 - name: Download ScaleIO files for ansible-scaleio project
-  get_url: "{{ scaleio_source_url }}"
+  get_url:
+    url:  "{{ scaleio_source_url }}"
+    dest: "{{ scaleio_path }}"
   register: download_file
   when: not (scaleio_zip.stat.exists and offline)
 

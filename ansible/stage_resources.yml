@@ -39,6 +39,12 @@
       with_items: resource_dirs
       tags: paths
 
+    - name: Check if private project tar.gz exists in /opt/autodeploy/projects
+      stat:
+        path: "{{ projects_base_path }}/wiley/{{ private_git_file }}"
+      register: private_git
+      tags: git
+
     - name: Download the private project repo from Git to /opt/autodeploy/projects
       selenium:
         url: "{{ private_git_url }}"
@@ -47,7 +53,14 @@
         username_element_id: login_field
         password_element_id: password
         download_directory: "{{ projects_base_path }}/wiley/"
+      when: not (private_git.stat.exists)
       tags: git
+
+    - name: Extract the private project source files
+      unarchive:
+        src: "{{ projects_base_path }}/wiley/{{ private_git_file }}"
+        dest: "{{ projects_base_path }}/wiley"
+      when: private_git.stat.exists
 
     - name: Download the Hanlon microkernel image to /opt/autodeploy/resources/ISO
       get_url:
