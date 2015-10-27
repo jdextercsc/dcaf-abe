@@ -12,7 +12,7 @@
     url:  "{{ scaleio_source_url }}"
     dest: "{{ scaleio_path }}"
   register: download_file
-  when: not (scaleio_zip.stat.exists and offline)
+  when: not (scaleio_zip.stat.exists or offline)
 
 - name: Extract the ScaleIO source files
   unarchive:
