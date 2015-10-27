@@ -89,7 +89,7 @@ sshpass
 tcpdump
 traceroute
 unzip
-vim
+vim-enhanced
 wget
 xinetd
 xorg-x11-server-Xvfb
