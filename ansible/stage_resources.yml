@@ -92,7 +92,7 @@
       tags: iso
 
     - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms
-      shell: yumdownloader --downloadonly --destdir={{ rpm_path }} $(cat {{ rpm_list }})
+      shell: repotrack $(cat {{ rpm_list }}) -p {{ rpm_path }}
       when: offline
       tags: repo
 

@@ -17,7 +17,7 @@ iso_path: "{{ resources_base_path }}/ISO/"
 packages_path: "{{ resources_base_path }}/packages/"
 projects_base_path: "{{ autodeploy_base_path }}/projects"
 resources_base_path: "{{ autodeploy_base_path }}/resources"
-rpm_file: final-rpm-list.txt
+rpm_file: rpm_packages.txt
 rpm_path: "{{ resources_base_path }}/rpms/"
 rpm_list: "{{ projects_base_path }}/kragle/ansible/files/{{ rpm_file }}"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
