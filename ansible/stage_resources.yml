@@ -58,7 +58,6 @@
 
     - name: Extract the private project source files
       command: "tar -C {{ projects_base_path }}/wiley/ -xvzf {{ projects_base_path }}/wiley/{{ private_git_file}} --strip=1"
-      when: private_git.stat.exists
       tags: git
 
     - name: Download the Hanlon microkernel image to /opt/autodeploy/resources/ISO
