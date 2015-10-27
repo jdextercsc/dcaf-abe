@@ -1,16 +1,17 @@
 ---
-# This play will download the public DCAF source projects to the usb drive. All other plays will be run from those projects. At this point ansible has been
-# manually installed but there are not any project repos available. This play will call another play from the 'Kragle' project on the usb drive.
+# This play will download the public DCAF source projects to the /opt/autodeploy/projects directory.
+# All other plays will be run from those projects. At this point ansible has been
+# manually installed but there are not any project repos available. Change into the
+# /opt/autodeploy/projects/kragle/ansible directory to run the other plays.
 
 - name: Download the Kragle source repo
   hosts: localhost
   gather_facts: false
 
   vars:
-    autodeploy_user: autodeploy
-    usb_path: /mnt/sdb/autodeploy
-    usb_projects_path: "{{ usb_path }}/projects"
-    usb_resources_path: "{{ usb_path }}/resources"
+    autodeploy_base_path: /opt/autodeploy
+    projects_base_path: "{{ autodeploy_base_path }}/projects"
+    resources_base_path: "{{ autodeploy_base_path }}/resources"
 
     git_repos:
       - { name: "kragle", repo: "git://github.com/csc/kragle", tag: "https://api.github.com/repos/csc/kragle/tags" }
@@ -23,10 +24,9 @@
       file:
         path: "{{ item }}"
         state: directory
-        owner: "{{ autodeploy_user }}"
       with_items:
-        - "{{ usb_projects_path }}"
-        - "{{ usb_resources_path }}"
+        - "{{ projects_base_path }}"
+        - "{{ resources_base_path }}"
 
     - name: Determine the latest tagged versions of public source Git repos
       uri:
@@ -38,9 +38,8 @@
     - name: Clone the public project repos from Git
       git:
         repo: "{{ item.item.repo }}"
-        dest: "{{ usb_projects_path }}/{{ item.item.name }}"
+        dest: "{{ projects_base_path }}/{{ item.item.name }}"
         accept_hostkey: yes
         version: "{{ item.json[0].name }}"
       ignore_errors: true
       with_items: tags.results
-

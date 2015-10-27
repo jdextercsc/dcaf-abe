@@ -2,12 +2,12 @@
 # Offline autodeploy vars
 offline: true
 repo_name: "offline_repo_directory_name"
+usb_hdd: /mnt/sdb
 use_scaleio: true
 use_wiley: true
 
 # Autodeploy common vars
 auto_deploy_node: x.x.x.x
-autodeploy_user: autodeploy
 autodeploy_base_path: /opt/autodeploy
 dns1: x.x.x.x
 docker_api_version: 1.18
@@ -17,7 +17,7 @@ iso_path: "{{ resources_base_path }}/ISO/"
 packages_path: "{{ resources_base_path }}/packages/"
 projects_base_path: "{{ autodeploy_base_path }}/projects"
 resources_base_path: "{{ autodeploy_base_path }}/resources"
-rpm_file: final-rpm-list.txt
+rpm_file: rpm_packages.txt
 rpm_path: "{{ resources_base_path }}/rpms/"
 rpm_list: "{{ projects_base_path }}/kragle/ansible/files/{{ rpm_file }}"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
@@ -57,15 +57,8 @@ git_repos:
   - { name: "ansible-scaleio", repo: "git://github.com/csc/ansible-scaleio", tag: "https://api.github.com/repos/csc/ansible-scaleio/tags" }
 
 # Offline usb staging vars
-usb_path: /mnt/sdb/autodeploy
-usb_projects_path: "{{ usb_path }}/projects"
-usb_resources_path: "{{ usb_path }}/resources"
-usb_docker_path: "{{ usb_resources_path }}/docker/"
-usb_iso_path: "{{ usb_resources_path }}/ISO/"
-usb_packages_path: "{{ usb_resources_path }}/packages/"
-usb_rpm_list: "{{ usb_projects_path }}/kragle/ansible/files/{{ rpm_file }}"
-usb_rpm_path: "{{ usb_resources_path }}/rpms/"
-usb_scaleio_path: "{{ usb_resources_path }}/scaleio/"
+usb_projects_path: "{{ usb_hdd }}/autodeploy/projects"
+usb_resources_path: "{{ usb_hdd }}/autodeploy/resources"
 
 autodeploy_support_pkgs:
   - createrepo
@@ -92,11 +85,11 @@ pip_pkgs:
   - pip2pi
   - selenium
 
-project_files:
-  - kragle
-  - wiley
-  - slimer
+source_projects:
   - ansible-scaleio
+  - kragle
+  - slimer
+  - wiley
 
 iso_files:
   - "{{ hnl_mk_image }}"
@@ -108,3 +101,10 @@ docker_files:
   - cscdock_hanlon.tar
   - cscdock_atftpd.tar
   - mongo.tar
+
+resource_dirs:
+  - docker
+  - ISO
+  - packages
+  - rpms
+  - scaleio
