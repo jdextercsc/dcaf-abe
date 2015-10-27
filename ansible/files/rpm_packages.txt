@@ -1,3 +1,4 @@
+ansible
 bind-utils
 bridge-utils
 ceph-common
@@ -6,6 +7,8 @@ dhcp
 docker
 fence-agents-all
 firefox
+genisoimage
+git
 haproxy
 httpd
 ipmitool
