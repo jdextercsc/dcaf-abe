@@ -1,4 +1,6 @@
 ---
+# The createrepo role will create an offline http repo for use when internet connectivity is not available.
+
 - name: Create offline HTTP repo directory
   file:
     path: "/var/www/html/repo"
@@ -12,8 +14,8 @@
 - name: Create offline HTTP repository
   command: createrepo "/var/www/html/repo"
 
-- name:
-  template: Repo file to provide to hosts
+- name: Repo file to provide to hosts
+  template:
     src: offline.repo.j2
     dest: "/var/www/html/repo/offline.repo"
 
