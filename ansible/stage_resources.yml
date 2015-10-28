@@ -102,8 +102,20 @@
         dest: "{{ iso_path }}"
       tags: iso
 
+    - name: Download the EPEL RPMs to /opt/autodeploy/resources/rpms
+      shell: repotrack $(cat {{ epel_rpm_file }}) -p {{ rpm_path }}
+      when: offline
+      tags: repo
+
     - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms
-      shell: repotrack $(cat {{ rpm_list }}) -p {{ rpm_path }}
+      shell:
+        repotrack $(cat {{ rhn_rpm_file }}) -p {{ rpm_path }}
+        -r rhel-7-server-extras-rpms
+        -r rhel-7-server-openstack-6.0-rpms
+        -r rhel-7-server-optional-rpms
+        -r rhel-7-server-rpms
+        -r rhel-ha-for-rhel-7-server-rpms
+        -r rhel-server-rhscl-7-rpms
       when: offline
       tags: repo
 
