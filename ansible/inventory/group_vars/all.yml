@@ -16,9 +16,9 @@ iso_path: "{{ resources_base_path }}/ISO/"
 packages_path: "{{ resources_base_path }}/packages/"
 projects_base_path: "{{ autodeploy_base_path }}/projects"
 resources_base_path: "{{ autodeploy_base_path }}/resources"
-rpm_file: rpm_packages.txt
+epel_rpm_file: "{{ projects_base_path }}/kragle/ansible/files/epel_rpm_packages.txt"
+rhn_rpm_file: "{{ projects_base_path }}/kragle/ansible/files/rhn_rpm_packages.txt"
 rpm_path: "{{ resources_base_path }}/rpms/"
-rpm_list: "{{ projects_base_path }}/kragle/ansible/files/{{ rpm_file }}"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
 
 # Autodeploy site_discovery vars:
@@ -65,10 +65,10 @@ autodeploy_support_pkgs:
   - dhcp
   - docker
   - firefox
+  - genisoimage
   - httpd
   - ipmitool
   - iptables-services
-  - mkisofs
   - ntp
   - python-ipaddr
   - python-passlib

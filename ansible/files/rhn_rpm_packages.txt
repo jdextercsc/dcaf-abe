@@ -1,4 +1,3 @@
-ansible
 bind-utils
 bridge-utils
 ceph-common
@@ -78,14 +77,11 @@ python-nova
 python-novaclient
 python-openstackclient
 python-passlib
-python-pip
 python-swiftclient
-python-xvfbwrapper
 rabbitmq-server
 resource-agents
 rsync
 sos
-sshpass
 tcpdump
 traceroute
 unzip
