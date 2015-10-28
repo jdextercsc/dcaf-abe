@@ -1,23 +1,23 @@
 ---
-- name: create repo directory for httpd
+- name: Create offline HTTP repo directory
   file:
-    path: "/var/www/html/{{ repo_name }}"
+    path: "/var/www/html/repo"
     state: directory
 
-- name: copy repo files to http directory
+- name: Copy offline repo file to http directory
   copy:
     src: "{{ rpm_path }}/"
-    dest: "/var/www/html/{{ repo_name }}"
+    dest: "/var/www/html/repo"
 
-- name: createrepo
-  command: createrepo "/var/www/html/{{ repo_name }}"
+- name: Create offline HTTP repository
+  command: createrepo "/var/www/html/repo"
 
-- name: repofile to provide to node
-  template:
-    src: repo_template.repo.j2
-    dest: "/var/www/html/{{ repo_name }}/offline.repo"
+- name:
+  template: Repo file to provide to hosts
+    src: offline.repo.j2
+    dest: "/var/www/html/repo/offline.repo"
 
-- name: start httpd
+- name: Start the httpd service
   service:
     name: httpd
     state: restarted
