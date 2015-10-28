@@ -7,7 +7,7 @@ option ipxe.no-pxedhcp 1;
 # ipxe.comboot is required for ESXi and lets make sure our ROM has it enabled before proceeding
 #
 if exists ipxe.http and exists ipxe.menu and ( (exists ipxe.pxe and exists ipxe.comboot) or (exists ipxe.efi) ) {
-    filename "{{ hanlon_ipxe }}"; 
+    filename "{{ hanlon_ipxe }}";
 }
 elsif exists user-class and option user-class = "iPXE" {
     # We're already using iPXE, but not a feature-full version,

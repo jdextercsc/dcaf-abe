@@ -134,6 +134,7 @@
         docker_api_version: "{{ docker_api_version }}"
         name: "{{ item.name }}"
         image: "{{ item.image }}"
+        pull: always
         state: present
       with_items:
         - { name: hanlon-mongo, image: mongo }
