@@ -1,23 +1,25 @@
 ---
-- name: create repo directory for httpd
+# The createrepo role will create an offline http repo for use when internet connectivity is not available.
+
+- name: Create offline HTTP repo directory
   file:
-    path: "/var/www/html/{{ repo_name }}"
+    path: "/var/www/html/repo"
     state: directory
 
-- name: copy repo files to http directory
+- name: Copy offline repo file to http directory
   copy:
     src: "{{ rpm_path }}/"
-    dest: "/var/www/html/{{ repo_name }}"
+    dest: "/var/www/html/repo"
 
-- name: createrepo
-  command: createrepo "/var/www/html/{{ repo_name }}"
+- name: Create offline HTTP repository
+  command: createrepo "/var/www/html/repo"
 
-- name: repofile to provide to node
+- name: Repo file to provide to hosts
   template:
-    src: repo_template.repo.j2
-    dest: "/var/www/html/{{ repo_name }}/offline.repo"
+    src: offline.repo.j2
+    dest: "/var/www/html/repo/offline.repo"
 
-- name: start httpd
+- name: Start the httpd service
   service:
     name: httpd
     state: restarted

@@ -1,7 +1,6 @@
 ---
 # Offline autodeploy vars
 offline: true
-repo_name: "offline_repo_directory_name"
 usb_hdd: /mnt/sdb
 use_scaleio: true
 use_wiley: true
