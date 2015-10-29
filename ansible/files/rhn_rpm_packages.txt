@@ -1,3 +1,4 @@
+bash-completion
 bind-utils
 bridge-utils
 ceph-common
@@ -14,6 +15,8 @@ ipmitool
 iptables-services
 iptables-services
 iscsi-initiator-utils
+java-1.7.0-openjdk-devel
+libaio
 libselinux-python
 libvirt
 mariadb-galera-server
@@ -22,10 +25,12 @@ mod_ssl
 mod_wsgi
 mongodb
 mongodb-server
+mutt
 MySQL-python
 net-tools
 nfs-utils
 ntp
+numactl
 openssh-clients
 openstack-ceilometer-alarm
 openstack-ceilometer-api
@@ -64,6 +69,7 @@ openstack-utils
 openvswitch
 pacemaker
 pcs
+python
 python-ceilometer
 python-ceilometerclient
 python-cinder
