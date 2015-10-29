@@ -70,9 +70,9 @@ python-cinder
 python-cinderclient
 python-glanceclient
 python-heatclient
-python-ipaddr
 python-keystonemiddleware
 python-memcached
+python-netaddr
 python-nova
 python-novaclient
 python-openstackclient

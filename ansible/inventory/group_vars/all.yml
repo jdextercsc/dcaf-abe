@@ -70,7 +70,7 @@ autodeploy_support_pkgs:
   - ipmitool
   - iptables-services
   - ntp
-  - python-ipaddr
+  - python-netaddr
   - python-passlib
   - python-pip
   - python-xvfbwrapper
