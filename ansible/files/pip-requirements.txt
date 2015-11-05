@@ -1,0 +1,10 @@
+## docker-py and dependencies
+docker-py==1.4.0
+requests==2.8.1
+six==1.10.0
+websocket-client==0.34.0
+backports.ssl-match-hostname==3.4.0.2
+
+## Other requirements
+pip2pi==0.6.8
+selenium==2.48.0

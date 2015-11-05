@@ -7,7 +7,7 @@
     path: "{{ scaleio_path }}/{{ scaleio_source_zip }}"
   register: scaleio_zip
 
-- name: Download ScaleIO files for ansible-scaleio project
+- name: Download ScaleIO files for ansible-scaleio project (Online)
   get_url:
     url:  "{{ scaleio_source_url }}"
     dest: "{{ scaleio_path }}"

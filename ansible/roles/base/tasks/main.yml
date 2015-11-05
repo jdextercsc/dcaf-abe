@@ -1,29 +1,22 @@
 ---
 # The base role will do the initial preparation of the autodeploynode.
 
-- name: Install package updates
-  yum:
-    name: "*"
-    state: latest
-  ignore_errors: true
-  when: not offline
-
 - name: Install required support packages
   yum:
     pkg: "{{ item }}"
     state: present
   with_items: autodeploy_support_pkgs
 
-- name: Install docker-py with pip
+- name: Install required pip-based support packages (Online)
   pip:
-    name: docker-py
+    requirements: "{{ projects_base_path }}/kragle/ansible/files/pip-requirements.txt"
     state: present
     extra_args: "--upgrade"
   when: not offline
 
-- name: Install docker-py with pip when offline
+- name: Install required pip-based support packages (Offline)
   pip:
-    name: docker-py
+    requirements: "{{ projects_base_path }}/kragle/ansible/files/pip-requirements.txt"
     state: present
     extra_args: "--index-url=file://{{ packages_path }}simple/"
   when: offline
@@ -99,7 +92,7 @@
     - ntpd
     - docker
 
-- name: Get latest tagged version of Git repos
+- name: Get latest tagged version of Git repos (Online)
   uri:
     url: "{{ item.tag }}"
     method: GET
@@ -107,7 +100,7 @@
   register: tags
   when: not offline
 
-- name: Clone source Git repos
+- name: Clone source Git repos (Online)
   git:
     repo: "{{ item.item.repo }}"
     dest: "{{ projects_base_path }}/{{ item.item.name }}"
