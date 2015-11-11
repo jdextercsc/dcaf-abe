@@ -17,10 +17,9 @@
 
     - name: Install required pip-based support packages
       pip:
-        name: "{{ item }}"
+        requirements: "{{ projects_base_path }}/kragle/ansible/files/pip-requirements.txt"
         state: present
         extra_args: "--upgrade"
-      with_items: pip_pkgs
       tags: pkgs
 
     - name: Create the staging directories in /opt/autodeploy
@@ -102,12 +101,12 @@
         dest: "{{ iso_path }}"
       tags: iso
 
-    - name: Download the EPEL RPMs to /opt/autodeploy/resources/rpms
+    - name: Download the EPEL RPMs to /opt/autodeploy/resources/rpms (Offline)
       shell: repotrack $(cat {{ epel_rpm_file }}) -p {{ rpm_path }}
       when: offline
       tags: repo
 
-    - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms
+    - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms (Offline)
       shell:
         repotrack $(cat {{ rhn_rpm_file }}) -p {{ rpm_path }}
         -r rhel-7-server-extras-rpms
@@ -119,17 +118,17 @@
       when: offline
       tags: repo
 
-    - name: Create the local offline repository in /opt/autodeploy/resources/rpms
+    - name: Create the local repository in /opt/autodeploy/resources/rpms (Offline)
       command: createrepo "{{ rpm_path }}"
       when: offline
       tags: repo
 
-    - name: Mirror docker-py and its dependencies to /opt/autodeploy/resources/packages
-      command: pip2tgz "{{ packages_path }}" docker-py
+    - name: Mirror pip dependencies to /opt/autodeploy/resources/packages (Offline)
+      command: pip2tgz {{ packages_path }} -r {{ projects_base_path }}/kragle/ansible/files/pip-requirements.txt
       when: offline
       tags: docker
 
-    - name: Create the PyPi-compatible "simple" package in /opt/autodeploy/resources/packages
+    - name: Create the PyPi-compatible "simple" package in /opt/autodeploy/resources/packages (Offline)
       command: dir2pi "{{ packages_path }}"
       when: offline
       tags: docker
@@ -155,7 +154,7 @@
         - { name: hanlon-atftpd, image: cscdock/atftpd }
       tags: docker
 
-    - name: Save docker container images to /opt/autodeploy/resources/docker
+    - name: Save docker container images to /opt/autodeploy/resources/docker (Offline)
       shell: docker save docker.io/"{{ item.image }}" > "{{ docker_path }}/{{ item.tar_file }}"
       with_items:
         - { image: cscdock/hanlon, tar_file: cscdock_hanlon.tar }
@@ -170,15 +169,15 @@
         dest: "{{ scaleio_path }}"
       tags: scaleio
 
-    - name: Copy the downloaded projects to the usb drive
+    - name: Copy the downloaded projects to the usb drive (Offline)
       copy:
         src: "{{ projects_base_path }}/{{ item }}"
         dest: "{{ usb_projects_path }}"
       with_items: source_projects
-      when : offline
+      when: offline
       tags: copy
 
-    - name: Copy the downloaded resources to the usb drive
+    - name: Copy the downloaded resources to the usb drive (Offline)
       copy:
         src: "{{ resources_base_path }}/{{ item }}"
         dest: "{{ usb_resources_path }}"

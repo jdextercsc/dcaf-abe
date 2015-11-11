@@ -14,7 +14,7 @@
 - name: Create offline HTTP repository
   command: createrepo "/var/www/html/repo"
 
-- name: Repo file to provide to hosts
+- name: Create repo file to provide to hosts
   template:
     src: offline.repo.j2
     dest: "/var/www/html/repo/offline.repo"

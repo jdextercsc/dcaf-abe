@@ -63,7 +63,7 @@ usb_resources_path: "{{ usb_hdd }}/autodeploy/resources"
 autodeploy_support_pkgs:
   - createrepo
   - dhcp
-  - docker
+  - docker-1.7.1
   - firefox
   - genisoimage
   - httpd
@@ -80,11 +80,6 @@ autodeploy_support_pkgs:
   - wget
   - xorg-x11-server-Xvfb
   - yum-utils
-
-pip_pkgs:
-  - docker-py
-  - pip2pi
-  - selenium
 
 source_projects:
   - ansible-scaleio
