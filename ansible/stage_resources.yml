@@ -52,14 +52,20 @@
         password: "{{ git_pass }}"
         username_element_id: login_field
         password_element_id: password
-        download_directory: "{{ projects_base_path }}/wiley/"
+        download_directory: "{{ projects_base_path }}/{{ private_git_repo }}"
       register: download_git
       when: not (private_git.stat.exists)
       tags: git
 
+    - name: Check if private project was extracted in /opt/autodeploy/projects
+      stat:
+        path: "{{ projects_base_path }}/{{ private_git_repo }}"
+      register: extracted
+      tags: git
+
     - name: Extract the private project source files
       command: "tar -C {{ projects_base_path }}/wiley/ -xvzf {{ projects_base_path }}/wiley/{{ private_git_file}} --strip=1"
-      when: download_git.changed == true
+      when: (extracted.stat.isdir is defined and simple.stat.isdir)
       tags: git
 
     - name: Check if Hanlon Microkernel file exists in /opt/autodeploy/resources/ISO
@@ -201,7 +207,7 @@
       when: offline and not (item.stat.exists)
       tags: docker
 
-   - name: Check if ScaleIO files exist in /opt/autodeploy/resources/scaleio
+    - name: Check if ScaleIO files exist in /opt/autodeploy/resources/scaleio
       stat:
         path: "{{ scaleio_path }}/{{ scaleio_source_zip }}"
       register: scaleio_zip
