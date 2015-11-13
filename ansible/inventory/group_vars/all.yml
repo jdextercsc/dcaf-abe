@@ -11,6 +11,7 @@ autodeploy_base_path: /opt/autodeploy
 dns1: x.x.x.x
 docker_api_version: 1.18
 docker_path: "{{ resources_base_path }}/docker/"
+docker_py_zip: docker-py-1.4.0.tar.gz
 hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
 iso_path: "{{ resources_base_path }}/ISO/"
 packages_path: "{{ resources_base_path }}/packages/"
@@ -93,10 +94,10 @@ iso_files:
   - "{{ hnl_rhel_min_image }}"
   - "{{ kvm_guest_image }}"
 
-docker_files:
-  - cscdock_hanlon.tar
-  - cscdock_atftpd.tar
-  - mongo.tar
+docker_images:
+  - { name: hanlon-mongo, image: mongo, tar_file: mongo.tar }
+  - { name: hanlon-server, image: cscdock/hanlon, tar_file: cscdock_hanlon.tar }
+  - { name: hanlon-atftpd, image: cscdock/atftpd, tar_file: cscdock_atftpd.tar }
 
 resource_dirs:
   - docker
