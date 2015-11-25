@@ -109,3 +109,16 @@
   ignore_errors: true
   with_items: tags.results
   when: not offline
+
+- name: Update default Ansible configuration
+  lineinfile:
+    dest: /etc/ansible/ansible.cfg
+    regexp: "(^#|^){{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: 'inventory', line: 'inventory = ./hosts.ini' }
+    - { regexp: 'forks', line: 'forks = 20' }
+    - { regexp: 'host_key_checking', line: 'host_key_checking = False' }
+    - { regexp: 'log_path', line: 'log_path = ./ansible.log' }
+    - { regexp: 'ssh_args', line: 'ssh_args = -o ControlMaster=auto -o ControlPersist=60s' }
+    - { regexp: 'pipelining', line: 'pipelining = True' }
