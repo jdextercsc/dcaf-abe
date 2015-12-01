@@ -1,8 +1,9 @@
 ---
-# This playbook will prepare the staging directories and retrieve the automation resources for the autodeploynode.
-# The resources will be staged locally in the /opt/autodeploy/projects/ and opt/autodeploy/resources/ directories.
+# This playbook will prepare the staging directories and retrieve the automation resources for the
+# autodeploynode. The resources will be staged locally in the /opt/autodeploy/projects/ and
+# opt/autodeploy/resources/ directories.
 
-- name: Prepare the staging resources
+- name: Stage DCAF automation resources on autodeploynode
   gather_facts: true
   hosts: localhost
 
@@ -51,18 +52,39 @@
         password: "{{ git_pass }}"
         username_element_id: login_field
         password_element_id: password
-        download_directory: "{{ projects_base_path }}/wiley/"
+        download_directory: "{{ projects_base_path }}/{{ private_git_repo }}"
+      register: download_git
       when: not (private_git.stat.exists)
+      tags: git
+
+    - name: Check if private project was extracted in /opt/autodeploy/projects
+      stat:
+        path: "{{ projects_base_path }}/{{ private_git_repo }}"
+      register: extracted
       tags: git
 
     - name: Extract the private project source files
       command: "tar -C {{ projects_base_path }}/wiley/ -xvzf {{ projects_base_path }}/wiley/{{ private_git_file}} --strip=1"
+      when: (extracted.stat.isdir is defined and simple.stat.isdir)
       tags: git
+
+    - name: Check if Hanlon Microkernel file exists in /opt/autodeploy/resources/ISO
+      stat:
+        path: "{{ iso_path }}/{{ hnl_mk_image }}"
+      register: hnl_mk
+      tags: iso
 
     - name: Download the Hanlon microkernel image to /opt/autodeploy/resources/ISO
       get_url:
         url: "{{ hnl_mk_source }}{{ hnl_mk_image }}"
         dest: "{{ iso_path }}"
+      when: not (hnl_mk.stat.exists)
+      tags: iso
+
+    - name: Check if RHEL DVD ISO file exists in /opt/autodeploy/resources/ISO
+      stat:
+        path: "{{ iso_path }}/{{ rhel_iso_image }}"
+      register: rhel_iso
       tags: iso
 
 # There two separate selenium downloads here because the authtoken on the link will time out
@@ -75,12 +97,20 @@
         password_element_id: password
         xpath: '//*[contains(@href,"{{ rhel_iso_image }}")]'
       register: rhel_get_url
+      when: not (rhel_iso.stat.exists)
       tags: iso
 
     - name: Download the RHEL DVD ISO file to /opt/autodeploy/resources/ISO
       get_url:
         url: "{{ rhel_get_url.url }}"
         dest: "{{ iso_path }}"
+      when: not (rhel_iso.stat.exists)
+      tags: iso
+
+    - name: Check if Red Hat KVM Guest image file exists in /opt/autodeploy/resources/ISO
+      stat:
+        path: "{{ iso_path }}/{{ kvm_guest_image }}"
+      register: kvm_guest
       tags: iso
 
 # There two separate selenium downloads here because the authtoken on the link will time out
@@ -93,20 +123,22 @@
         password_element_id: password
         xpath: '//*[contains(@href,"{{ kvm_guest_image }}")]'
       register: kvm_get_url
+      when: not (kvm_guest.stat.exists)
       tags: iso
 
     - name: Download the KVM Guest Image file to /opt/autodeploy/resources/ISO
       get_url:
         url: "{{ kvm_get_url.url }}"
         dest: "{{ iso_path }}"
+      when: not (kvm_guest.stat.exists)
       tags: iso
 
-    - name: Download the EPEL RPMs to /opt/autodeploy/resources/rpms (Offline)
+    - name: Download the EPEL RPMs to /opt/autodeploy/resources/rpms when offline
       shell: repotrack $(cat {{ epel_rpm_file }}) -p {{ rpm_path }}
       when: offline
       tags: repo
 
-    - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms (Offline)
+    - name: Download the Red Hat RPMs to /opt/autodeploy/resources/rpms when offline
       shell:
         repotrack $(cat {{ rhn_rpm_file }}) -p {{ rpm_path }}
         -r rhel-7-server-extras-rpms
@@ -118,19 +150,30 @@
       when: offline
       tags: repo
 
-    - name: Create the local repository in /opt/autodeploy/resources/rpms (Offline)
+    - name: Create the local repository in /opt/autodeploy/resources/rpms when offline
       command: createrepo "{{ rpm_path }}"
       when: offline
       tags: repo
 
-    - name: Mirror pip dependencies to /opt/autodeploy/resources/packages (Offline)
-      command: pip2tgz {{ packages_path }} -r {{ projects_base_path }}/kragle/ansible/files/pip-requirements.txt
-      when: offline
+    - name: Check if docker-py files exist in /opt/autodeploy/resources/packages
+      stat:
+        path: "{{ packages_path }}/{{ docker_py_zip }}"
+      register: docker_py
       tags: docker
 
-    - name: Create the PyPi-compatible "simple" package in /opt/autodeploy/resources/packages (Offline)
+    - name: Mirror pip dependencies to /opt/autodeploy/resources/packages when offline
+      command: pip2tgz {{ packages_path }} -r {{ projects_base_path }}/kragle/ansible/files/pip-requirements.txt
+      when: offline and not (docker_py.stat.exists)
+
+    - name: Check if PyPi-compatible "simple" package exists in /opt/autodeploy/resources/packages
+      stat:
+        path: "{{ packages_path }}/simple"
+      register: simple
+      tags: docker
+
+    - name: Create the PyPi-compatible "simple" package in /opt/autodeploy/resources/packages when offline
       command: dir2pi "{{ packages_path }}"
-      when: offline
+      when: offline and not (simple.stat.isdir is defined and simple.stat.isdir)
       tags: docker
 
     - name: Start and enable the docker service
@@ -140,47 +183,57 @@
         state: started
       tags: docker
 
+    - name: Check if Docker image files exist in /opt/autodeploy/resources/docker
+      stat:
+        path: "{{ docker_path }}/{{ item.tar_file }}"
+      with_items: docker_images
+      register: docker_img
+      tags: docker
+
     - name: Pull the project docker images from the docker registry
       docker:
         docker_api_version: "{{ docker_api_version }}"
-        name: "{{ item.name }}"
-        image: "{{ item.image }}"
+        name: "{{ item.item.name }}"
+        image: "{{ item.item.image }}"
         pull: always
         state: present
-      with_items:
-        - { name: hanlon-mongo, image: mongo }
-#        - { name: hanlon-cassandra, image: tobert/cassandra }
-        - { name: hanlon-server, image: cscdock/hanlon }
-        - { name: hanlon-atftpd, image: cscdock/atftpd }
+      with_items: docker_img.results
+      when: not (item.stat.exists)
       tags: docker
 
     - name: Save docker container images to /opt/autodeploy/resources/docker (Offline)
-      shell: docker save docker.io/"{{ item.image }}" > "{{ docker_path }}/{{ item.tar_file }}"
-      with_items:
-        - { image: cscdock/hanlon, tar_file: cscdock_hanlon.tar }
-        - { image: cscdock/atftpd, tar_file: cscdock_atftpd.tar }
-        - { image: mongo, tar_file: mongo.tar }
-      when: offline
+      shell: docker save docker.io/"{{ item.item.image }}" > "{{ docker_path }}/{{ item.item.tar_file }}"
+      with_items: docker_img.results
+      when: offline and not (item.stat.exists)
       tags: docker
+
+    - name: Check if ScaleIO files exist in /opt/autodeploy/resources/scaleio
+      stat:
+        path: "{{ scaleio_path }}/{{ scaleio_source_zip }}"
+      register: scaleio_zip
+      tags: scaleio
 
     - name: Download ScaleIO files for ansible-scaleio to /opt/autodeploy/resources/scaleio
       get_url:
         url: "{{ scaleio_source_url }}"
         dest: "{{ scaleio_path }}"
+      when: not (scaleio_zip.stat.exists)
       tags: scaleio
 
-    - name: Copy the downloaded projects to the usb drive (Offline)
+    - name: Copy the downloaded projects to the usb drive when offline
       copy:
         src: "{{ projects_base_path }}/{{ item }}"
         dest: "{{ usb_projects_path }}"
+        force: no
       with_items: source_projects
       when: offline
       tags: copy
 
-    - name: Copy the downloaded resources to the usb drive (Offline)
+    - name: Copy the downloaded resources to the usb drive when offline
       copy:
         src: "{{ resources_base_path }}/{{ item }}"
         dest: "{{ usb_resources_path }}"
+        force: no
       with_items: resource_dirs
       when: offline
       tags: copy
