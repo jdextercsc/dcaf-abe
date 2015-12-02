@@ -96,7 +96,7 @@ iso_files:
 
 docker_images:
   - { name: hanlon-mongo, image: mongo, tar_file: mongo.tar }
-  - { name: hanlon-server, image: cscdock/hanlon, tar_file: cscdock_hanlon.tar }
+  - { name: hanlon-server, image: "cscdock/hanlon:2.5.0", tar_file: cscdock_hanlon.tar }
   - { name: hanlon-atftpd, image: cscdock/atftpd, tar_file: cscdock_atftpd.tar }
 
 resource_dirs:

@@ -18,7 +18,7 @@
       with_items:
         - { name: hanlon-mongo, image: mongo }
 #        - { name: hanlon-cassandra, image: tobert/cassandra }
-        - { name: hanlon-server, image: cscdock/hanlon }
+        - { name: hanlon-server, image: "cscdock/hanlon:2.5.0" }
         - { name: hanlon-atftpd, image: cscdock/atftpd }
 
     - name: Load Mongo, Hanlon and Atftpd Containers (Offline)
@@ -61,7 +61,7 @@
       docker:
         docker_api_version: "{{ docker_api_version }}"
         name: hanlon-server
-        image: cscdock/hanlon
+        image: "cscdock/hanlon:2.5.0"
         pull: missing
         state: started
         ports: 8026:8026
