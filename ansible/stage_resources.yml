@@ -41,7 +41,7 @@
 
     - name: Check if private project tar.gz exists in /opt/autodeploy/projects
       stat:
-        path: "{{ projects_base_path }}/wiley/{{ private_git_file }}"
+        path: "{{ projects_base_path }}/{{ private_git_repo }}/{{ private_git_file }}"
       register: private_git
       tags: git
 
@@ -59,13 +59,13 @@
 
     - name: Check if private project was extracted in /opt/autodeploy/projects
       stat:
-        path: "{{ projects_base_path }}/{{ private_git_repo }}"
+        path: "{{ projects_base_path }}/{{ private_git_repo }}/roles"
       register: extracted
       tags: git
 
     - name: Extract the private project source files
-      command: "tar -C {{ projects_base_path }}/wiley/ -xvzf {{ projects_base_path }}/wiley/{{ private_git_file}} --strip=1"
-      when: (extracted.stat.isdir is defined and extracted.stat.isdir)
+      command: "tar -C {{ projects_base_path }}/{{ private_git_repo }}/ -xvzf {{ projects_base_path }}/{{ private_git_repo }}/{{ private_git_file}} --strip=1"
+      when: not (extracted.stat.isdir is defined and extracted.stat.isdir)
       tags: git
 
     - name: Check if Hanlon Microkernel file exists in /opt/autodeploy/resources/ISO
