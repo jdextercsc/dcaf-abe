@@ -42,8 +42,8 @@ rhel_iso_image: rhel-server-7.2-x86_64-dvd.iso
 git_user:
 git_pass:
 private_git_repo: wiley
-private_git_file: wiley-0.1.3.tar.gz
-private_git_url: https://github.com/csc/wiley/archive/v0.1.3.tar.gz
+private_git_file: wiley-1.0.1.tar.gz
+private_git_url: https://github.com/csc/wiley/archive/v1.0.1.tar.gz
 rhel_download_url: https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.2/x86_64/product-downloads
 rhn_user:
 rhn_pass:
