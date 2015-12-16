@@ -1,18 +1,15 @@
 ---
 # Offline autodeploy vars
-offline: true
+offline: false
 usb_hdd: /mnt/sdb
 use_scaleio: true
 use_wiley: true
 
 # Autodeploy common vars
-auto_deploy_node: x.x.x.x
 autodeploy_base_path: /opt/autodeploy
-dns1: x.x.x.x
 docker_api_version: 1.18
 docker_path: "{{ resources_base_path }}/docker/"
 docker_py_zip: docker-py-1.4.0.tar.gz
-hanlon_base_url: http://{{ auto_deploy_node }}:8026/hanlon/api/v1/
 iso_path: "{{ resources_base_path }}/ISO/"
 packages_path: "{{ resources_base_path }}/packages/"
 projects_base_path: "{{ autodeploy_base_path }}/projects"
@@ -23,12 +20,6 @@ rpm_path: "{{ resources_base_path }}/rpms/"
 scaleio_path: "{{ resources_base_path }}/scaleio/"
 
 # Autodeploy site_discovery vars:
-domain_name: localdomain
-pxe_dhcp_range_start: x.x.x.x
-pxe_dhcp_range_end: x.x.x.x
-pxe_gateway: x.x.x.x
-pxe_subnet_mask: x.x.x.x
-pxe_subnet_name: x.x.x.x
 
 hnl_mk_image: hnl_mk_debug-image.2.0.1.iso
 hnl_rhel_min_image: rhel-server-7.2-x86_64-dvd-hnl.iso

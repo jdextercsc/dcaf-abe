@@ -12,15 +12,15 @@ option hanlon_server code 224 = ip-address;
 option hanlon_port code 225 = unsigned integer 16;
 option hanlon_base_uri code 226 = text;
 
-subnet {{ pxe_subnet_name }} netmask {{ pxe_subnet_mask }} {
+subnet {{ ansible_default_ipv4.network }} netmask {{ ansible_default_ipv4.netmask }} {
     range                       {{ pxe_dhcp_range_start }} {{ pxe_dhcp_range_end }};
-    option routers              {{ pxe_gateway }};
-    option subnet-mask          {{ pxe_subnet_mask }};
+    option routers              {{ ansible_default_ipv4.gateway }};
+    option subnet-mask          {{ ansible_default_ipv4.netmask }};
     option domain-name          "{{ domain_name }}";
     option domain-name-servers  {{ dns1 }};
-    next-server                 {{ auto_deploy_node }};
-    option tftp-server-name     "{{ auto_deploy_node }}";
-    option hanlon_server        {{ auto_deploy_node }};
+    next-server                 {{ ansible_default_ipv4.address }};
+    option tftp-server-name     "{{ ansible_default_ipv4.address }}";
+    option hanlon_server        {{ ansible_default_ipv4.address }};
     option hanlon_port          8026;
     option hanlon_base_uri      "/hanlon/api/v1";
 
