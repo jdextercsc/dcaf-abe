@@ -5,6 +5,7 @@
   hosts: localhost
   vars:
     packer: false
+    hanlon_base_url: http://{{ ansible_default_ipv4.address }}:8026/hanlon/api/v1/
   roles:
     - dhcp-server
 
