@@ -109,6 +109,11 @@ def main():
     start_selenium_driver(module)
     login(module)
 
+    # In Ansible 2.0 exit_json and fail_json contains a method remove_values that does not
+    # like random objects in the dictionary params.  So lets remove our object
+    # since we are at the end of the module and have no need for it.
+    del module.params['driver']
+
     if module.params['xpath']:
         find_xpath(module)
     elif module.params['download_directory']:
