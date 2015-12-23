@@ -53,11 +53,9 @@ def start_selenium_driver(module):
 
     driver.implicitly_wait(30)
     driver.get(module.params['url'])
-    module.params['driver'] = driver
+    return driver
 
-
-def login(module):
-    driver = module.params['driver']
+def login(module, driver):
     username = driver.find_element_by_id( module.params['username_element_id'] )
     password = driver.find_element_by_id( module.params['password_element_id'] )
 
@@ -66,8 +64,7 @@ def login(module):
     password.submit()
 
 
-def find_xpath(module):
-    driver = module.params['driver']
+def find_xpath(module, driver):
     for href_element in driver.find_elements_by_xpath(module.params['xpath']):
         href = href_element.get_attribute('href')
         if module.params['click_link']:
@@ -106,16 +103,11 @@ def main():
         module.fail_json(msg="xvfb is missing")
 
     start_xvfb(module)
-    start_selenium_driver(module)
-    login(module)
-
-    # In Ansible 2.0 exit_json and fail_json contains a method remove_values that does not
-    # like random objects in the dictionary params.  So lets remove our object
-    # since we are at the end of the module and have no need for it.
-    del module.params['driver']
+    driver = start_selenium_driver(module)
+    login(module, driver)
 
     if module.params['xpath']:
-        find_xpath(module)
+        find_xpath(module, driver)
     elif module.params['download_directory']:
         # Not an elegant solution but only download small files with this method.
         # Just going to sleep based on time_to_download
