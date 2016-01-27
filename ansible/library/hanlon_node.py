@@ -1,4 +1,7 @@
 #!/usr/bin/python
+import requests
+import urllib
+
 DOCUMENTATION = '''
 ---
 module: hanlon_node
@@ -39,83 +42,98 @@ options:
             - JSON string for IPMI options
 '''
 
-import requests
-import urllib
+EXAMPLES = '''
+- name: Initiate reboot of node
+  local_action:
+    module: hanlon_node
+    base_url: "http://10.10.10.10:8026/hanlon/api/v1"
+    smbios_uuid: "{{ smbios_uuid }}"
+    username: root
+    password: calvin
+    power_state: "reset"
+    ipmi_options: '{"driver": "lan20"}'
+  register: node_reboot
+  until: node_reboot.changed | default(false)
+'''
 
+class HanlonNode(object):
+    def __init__(self, module):
+        self.module = module
+        self.check_node_power_state()
 
-def change_power_state(module, current_state):
-    base_url = module.params['base_url']
-    url = "%s/node/power" % (base_url)
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-
-    if module.params['power_state'] == 'reset':
-        if current_state == 'on':
-            power_command = 'reset'
-        else:
-            power_command = 'on'
-    else:
-        power_command = module.params['power_state']
-
-    payload = {
-        'hw_id': module.params['smbios_uuid'],
-        'power_command': power_command,
-        'ipmi_username': module.params['username'],
-        'ipmi_password': module.params['password'],
-        }
-
-    if module.params['ipmi_options'] is not None:
-        payload.update({'ipmi_options': str(module.params['ipmi_options'])})
-
-    try:
-        if not module.check_mode:
-            req = requests.post(url, data=json.dumps(payload), headers=headers)
-            if req.status_code == 201:
-                json_result = req.json()
-                module.exit_json(changed=True)
+    def change_power_state(self, current_state):
+        base_url = self.module.params['base_url']
+        url = "%s/node/power" % (base_url)
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    
+        if self.module.params['power_state'] == 'reset':
+            if current_state == 'on':
+                power_command = 'reset'
             else:
-                module.fail_json(msg="Unknown Hanlon API error", apierror=req.text)
-        module.exit_json(changed=True, uuid=None)
-    except requests.ConnectionError as connect_error:
-        module.fail_json(msg="Connection Error; confirm Hanlon base_url.", apierror=str(connect_error))
-    except requests.Timeout as timeout_error:
-        module.fail_json(msg="Timeout Error; confirm status of Hanlon server", apierror=str(timeout_error))
-    except requests.RequestException as request_exception:
-        module.fail_json(msg="Unknown Request library failure", apierror=str(request_exception))
-
-def check_node_power_state(module):
-
-    base_url = module.params['base_url']
-    smbios_uuid = module.params['smbios_uuid']
-    power_state = module.params['power_state']
-    username = module.params['username']
-    password = module.params['password']
-
-    if module.params['ipmi_options'] is not None:
-        ipmi_options = urllib.quote(str(module.params['ipmi_options']))
-        url = "%s/node/power?hw_id=%s&ipmi_username=%s&ipmi_password=%s&ipmi_options=%s" % (base_url, smbios_uuid, username, password, ipmi_options)
-    else:
-        url = "%s/node/power?hw_id=%s&ipmi_username=%s&ipmi_password=%s" % (base_url, smbios_uuid, username, password)
-
-    try:
-        req = requests.get(url)
-        if req.status_code == 200:
-            active_model = req.json()
-            if 'response' in active_model:
-                if 'Status' in active_model['response']:
-                    current_state = active_model['response']['Status']
-                    if current_state == power_state:
-                        module.exit_json(changed=False)
-                    else:
-                        change_power_state(module, current_state)
-
+                power_command = 'on'
         else:
-            module.fail_json(msg="Unknown error", apierror=req.text)
-    except requests.ConnectionError as connect_error:
-        module.fail_json(msg="Connection Error; confirm Hanlon base_url.", apierror=str(connect_error))
-    except requests.Timeout as timeout_error:
-        module.fail_json(msg="Timeout Error; confirm status of Hanlon server", apierror=str(timeout_error))
-    except requests.RequestException as request_exception:
-        module.fail_json(msg="Unknown Request library failure", apierror=str(request_exception))
+            power_command = self.module.params['power_state']
+    
+        payload = {
+               'hw_id': self.module.params['smbios_uuid'],
+               'power_command': power_command,
+               'ipmi_username': self.module.params['username'],
+               'ipmi_password': self.module.params['password'],
+        }
+    
+        if self.module.params['ipmi_options'] is not None:
+            payload.update({'ipmi_options': str(self.module.params['ipmi_options'])})
+    
+        try:
+            if not self.module.check_mode:
+                req = requests.post(url, data=json.dumps(payload), headers=headers)
+                if req.status_code == 201:
+                    req.json()
+                    self.module.exit_json(changed=True)
+                else:
+                    self.module.fail_json(msg="Unknown Hanlon API error", apierror=req.text)
+            self.module.exit_json(changed=True, uuid=None)
+        except requests.ConnectionError as connect_error:
+            self.module.fail_json(msg="Connection Error; confirm Hanlon base_url.", apierror=str(connect_error))
+        except requests.Timeout as timeout_error:
+            self.module.fail_json(msg="Timeout Error; confirm status of Hanlon server", apierror=str(timeout_error))
+        except requests.RequestException as request_exception:
+            self.module.fail_json(msg="Unknown Request library failure", apierror=str(request_exception))
+    
+    def check_node_power_state(self):
+    
+        base_url = self.module.params['base_url']
+        smbios_uuid = self.module.params['smbios_uuid']
+        power_state = self.module.params['power_state']
+        username = self.module.params['username']
+        password = self.module.params['password']
+    
+        if self.module.params['ipmi_options'] is not None:
+            ipmi_options = urllib.quote(str(self.module.params['ipmi_options']))
+            url = "%s/node/power?hw_id=%s&ipmi_username=%s&ipmi_password=%s&ipmi_options=%s" % (base_url, smbios_uuid, username, password, ipmi_options)
+        else:
+            url = "%s/node/power?hw_id=%s&ipmi_username=%s&ipmi_password=%s" % (base_url, smbios_uuid, username, password)
+    
+        try:
+            req = requests.get(url)
+            if req.status_code == 200:
+                active_model = req.json()
+                if 'response' in active_model:
+                    if 'Status' in active_model['response']:
+                        current_state = active_model['response']['Status']
+                        if current_state == power_state:
+                            self.module.exit_json(changed=False)
+                        else:
+                            self.change_power_state(current_state)
+    
+            else:
+                self.module.fail_json(msg="Unknown error", apierror=req.text)
+        except requests.ConnectionError as connect_error:
+            self.module.fail_json(msg="Connection Error; confirm Hanlon base_url.", apierror=str(connect_error))
+        except requests.Timeout as timeout_error:
+            self.module.fail_json(msg="Timeout Error; confirm status of Hanlon server", apierror=str(timeout_error))
+        except requests.RequestException as request_exception:
+            self.module.fail_json(msg="Unknown Request library failure", apierror=str(request_exception))
 
 
 def create_argument_spec():
@@ -135,7 +153,8 @@ def create_argument_spec():
 def main():
     argument_spec = create_argument_spec()
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
-    check_node_power_state(module)
+    HanlonNode(module)
+    
 
 from ansible.module_utils.basic import *
 
