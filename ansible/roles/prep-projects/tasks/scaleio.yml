@@ -44,10 +44,10 @@
   copy:
     src: "{{ scaleio_path }}/{{ item }}"
     dest: "{{ scaleio_compute_path }}"
-  with_items: scaleio_os_files
+  with_items: "{{ scaleio_os_files }}"
 
 - name: Copy ScaleIO OpenStack-Controller Drivers to ansible-scaleio project
   copy:
     src: "{{ scaleio_path }}/{{ item }}"
     dest: "{{ scaleio_controllers_path }}"
-  with_items: scaleio_os_files
+  with_items: "{{ scaleio_os_files }}"
