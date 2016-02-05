@@ -32,7 +32,7 @@
       uri:
         url: "{{ item.tag }}"
         method: GET
-      with_items: git_repos
+      with_items: "{{ git_repos }}"
       register: tags
 
     - name: Clone the public project repos from Git
@@ -42,4 +42,4 @@
         accept_hostkey: yes
         version: "{{ item.json[0].name }}"
       ignore_errors: true
-      with_items: tags.results
+      with_items: "{{ tags.results }}"

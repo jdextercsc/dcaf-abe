@@ -13,7 +13,7 @@
       yum:
         pkg: "{{ item }}"
         state: present
-      with_items: autodeploy_support_pkgs
+      with_items: "{{ autodeploy_support_pkgs }}"
       tags: pkgs
 
     - name: Install required pip-based support packages
@@ -36,7 +36,7 @@
       file:
         path: "{{ resources_base_path }}/{{ item }}"
         state: directory
-      with_items: resource_dirs
+      with_items: "{{ resource_dirs }}"
       tags: paths
 
     - name: Check if private project tar.gz exists in /opt/autodeploy/projects
@@ -63,6 +63,7 @@
       register: extracted
       tags: git
 
+    # TODO Consider using unarchive module rather than running tar
     - name: Extract the private project source files
       command: "tar -C {{ projects_base_path }}/{{ private_git_repo }}/ -xvzf {{ projects_base_path }}/{{ private_git_repo }}/{{ private_git_file}} --strip=1"
       when: not (extracted.stat.isdir is defined and extracted.stat.isdir)
@@ -186,7 +187,7 @@
     - name: Check if Docker image files exist in /opt/autodeploy/resources/docker
       stat:
         path: "{{ docker_path }}/{{ item.tar_file }}"
-      with_items: docker_images
+      with_items: "{{ docker_images }}"
       register: docker_img
       tags: docker
 
@@ -197,13 +198,13 @@
         image: "{{ item.item.image }}"
         pull: always
         state: present
-      with_items: docker_img.results
+      with_items: "{{ docker_img.results }}"
       when: not (item.stat.exists)
       tags: docker
 
     - name: Save docker container images to /opt/autodeploy/resources/docker (Offline)
       shell: docker save docker.io/"{{ item.item.image }}" > "{{ docker_path }}/{{ item.item.tar_file }}"
-      with_items: docker_img.results
+      with_items: "{{ docker_img.results }}"
       when: offline and not (item.stat.exists)
       tags: docker
 
@@ -225,7 +226,7 @@
         src: "{{ projects_base_path }}/{{ item }}"
         dest: "{{ usb_projects_path }}"
         force: no
-      with_items: source_projects
+      with_items: "{{ source_projects }}"
       when: offline
       tags: copy
 
@@ -234,6 +235,6 @@
         src: "{{ resources_base_path }}/{{ item }}"
         dest: "{{ usb_resources_path }}"
         force: no
-      with_items: resource_dirs
+      with_items: "{{ resource_dirs }}"
       when: offline
       tags: copy

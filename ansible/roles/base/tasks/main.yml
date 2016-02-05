@@ -5,7 +5,7 @@
   yum:
     pkg: "{{ item }}"
     state: present
-  with_items: autodeploy_support_pkgs
+  with_items: "{{ autodeploy_support_pkgs }}"
 
 - name: Install required pip-based support packages (Online)
   pip:
@@ -96,7 +96,7 @@
   uri:
     url: "{{ item.tag }}"
     method: GET
-  with_items: git_repos
+  with_items: "{{ git_repos }}"
   register: tags
   when: not offline
 
@@ -107,7 +107,7 @@
     accept_hostkey: yes
     version: "{{ item.json[0].name }}"
   ignore_errors: true
-  with_items: tags.results
+  with_items: "{{ tags.results }}"
   when: not offline
 
 - name: Update default Ansible configuration
