@@ -8,3 +8,4 @@ backports.ssl-match-hostname==3.4.0.2
 ## Other requirements
 pip2pi==0.6.8
 selenium==2.48.0
+pyvmomi==5.5.0-2014.1.1

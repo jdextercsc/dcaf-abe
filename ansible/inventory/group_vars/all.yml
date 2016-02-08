@@ -72,6 +72,8 @@ autodeploy_support_pkgs:
   - wget
   - xorg-x11-server-Xvfb
   - yum-utils
+  - openssl-devel
+  - glibc.i686
 
 source_projects:
   - ansible-scaleio
