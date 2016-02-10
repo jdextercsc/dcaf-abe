@@ -1,8 +1,8 @@
 ---
-# This play will download the public DCAF source projects to the /opt/autodeploy/projects directory.
-# All other plays will be run from those projects. At this point ansible has been
-# manually installed but there are not any project repos available. Change into the
-# /opt/autodeploy/projects/kragle/ansible directory to run the other plays.
+# This play will download the initial source project to the
+# /opt/autodeploy/projects directory. All other plays will be run from those
+# projects. Change into the /opt/autodeploy/projects/kragle/ansible directory
+# to continue installation.
 
 - name: Download the Kragle source repo
   hosts: localhost
@@ -14,13 +14,11 @@
     resources_base_path: "{{ autodeploy_base_path }}/resources"
 
     git_repos:
-      - { name: "kragle", repo: "git://github.com/csc/kragle", tag: "https://api.github.com/repos/csc/kragle/tags" }
-      - { name: "slimer", repo: "git://github.com/csc/slimer", tag: "https://api.github.com/repos/csc/slimer/tags" }
-      - { name: "ansible-scaleio", repo: "git://github.com/csc/ansible-scaleio", tag: "https://api.github.com/repos/csc/ansible-scaleio/tags" }
+      - { name: "kragle", repo: "git@github.com:csc/kragle.git" }
 
   tasks:
 
-    - name: Create the staging directories on the usb hard drive
+    - name: Create the staging directories
       file:
         path: "{{ item }}"
         state: directory
@@ -28,18 +26,16 @@
         - "{{ projects_base_path }}"
         - "{{ resources_base_path }}"
 
-    - name: Determine the latest tagged versions of public source Git repos
-      uri:
-        url: "{{ item.tag }}"
-        method: GET
-      with_items: "{{ git_repos }}"
-      register: tags
-
-    - name: Clone the public project repos from Git
+    - name: Clone the project repos from Git
       git:
-        repo: "{{ item.item.repo }}"
-        dest: "{{ projects_base_path }}/{{ item.item.name }}"
+        repo: "{{ item.repo }}"
+        dest: "{{ projects_base_path }}/{{ item.name }}"
         accept_hostkey: yes
-        version: "{{ item.json[0].name }}"
-      ignore_errors: true
-      with_items: "{{ tags.results }}"
+        key_file: "{{ github_key_file }}"
+      with_items: "{{ git_repos }}"
+
+    - name: Checkout the latest tagged version
+      shell: "git checkout $(git describe --abbrev=0 --tags)"
+      args:
+        chdir: "{{ projects_base_path }}/{{ item.name }}"
+      with_items: "{{ git_repos }}"

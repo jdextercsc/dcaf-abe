@@ -1,4 +1,9 @@
 ---
+# Required User Variables
+rhn_user:
+rhn_pass:
+github_key_file:
+
 # Offline autodeploy vars
 offline: false
 usb_hdd: /mnt/sdb
@@ -30,23 +35,14 @@ kvm_guest_image: rhel-guest-image-7.2-20151102.0.x86_64.qcow2
 rhel_iso_image: rhel-server-7.2-x86_64-dvd.iso
 
 # Offline Staging vars
-git_user:
-git_pass:
-private_git_repo: wiley
-private_git_file: wiley-1.0.1.tar.gz
-private_git_url: https://github.com/csc/wiley/archive/v1.0.1.tar.gz
 rhel_download_url: https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.2/x86_64/product-downloads
-rhn_user:
-rhn_pass:
-pool:
 scaleio_source_zip: ScaleIO_1.32.2_Linux_SW_Download.zip
 scaleio_source_url: "http://downloads.emc.com/emc-com/usa/ScaleIO/{{scaleio_source_zip}}"
 
 git_repos:
-#  - { name: "wiley", repo: "git://github.com/csc/wiley", tag: "https://api.github.com/repos/csc/wiley/tags" }
-  - { name: "slimer", repo: "git://github.com/csc/slimer", tag: "https://api.github.com/repos/csc/slimer/tags" }
-  - { name: "kragle", repo: "git://github.com/csc/kragle", tag: "https://api.github.com/repos/csc/kragle/tags" }
-  - { name: "ansible-scaleio", repo: "git://github.com/csc/ansible-scaleio", tag: "https://api.github.com/repos/csc/ansible-scaleio/tags" }
+  - { name: "wiley", repo: "git@github.com:csc/wiley.git" }
+  - { name: "slimer", repo: "git@github.com:csc/slimer.git" }
+  - { name: "ansible-scaleio", repo: "git@github.com:csc/ansible-scaleio.git" }
 
 # Offline usb staging vars
 usb_projects_path: "{{ usb_hdd }}/autodeploy/projects"
