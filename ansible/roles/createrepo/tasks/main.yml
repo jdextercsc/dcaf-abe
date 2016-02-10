@@ -7,9 +7,9 @@
     dest: "{{ rpm_path }}"
 
 - name: Create offline repo config for httpd
-    template:
-      src: offline_repo.conf
-      dest: "/etc/httpd/conf.d/"
+  template:
+    src: offline_repo.conf
+    dest: "/etc/httpd/conf.d/"
 
 - name: Start the httpd service
   service:
