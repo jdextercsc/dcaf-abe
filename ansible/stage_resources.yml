@@ -46,6 +46,7 @@
         accept_hostkey: yes
         key_file: "{{ github_key_file }}"
       with_items: "{{ git_repos }}"
+      ignore_errors: true
 
     - name: Checkout the latest tagged version
       shell: "git checkout $(git describe --abbrev=0 --tags)"
