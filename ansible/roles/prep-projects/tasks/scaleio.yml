@@ -14,11 +14,11 @@
   register: download_file
   when: not (scaleio_zip.stat.exists or offline)
 
+# TODO Test if the source file has been extracted
 - name: Extract the ScaleIO source files
   unarchive:
     src: "{{ scaleio_path }}/{{ scaleio_source_zip }}"
     dest: "{{ scaleio_path }}"
-  when: scaleio_zip.stat.exists
 
 - name: Find ScaleIO RPMs to be copied
   shell: 'find {{ scaleio_path }} -type f -name "*.rpm" | egrep "RHEL7|Gateway" | egrep -v "MACOSX"'
