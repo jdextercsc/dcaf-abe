@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# DCAF Lab AutoDeploy Node Installation (BUILD RPM)
-# =====================================
+# DCAF AutoDeploy Node Installation
+# =================================
 # Prior to running this script, the following exports must be configured
 # export RHN_USER="username"
 # export RHN_PASS="password"    # escape dollar signs (\$)
@@ -16,8 +16,9 @@
 # chmod 0600 ~/github.pem
 
 # Once these prerequisites are in place, the script can be executed by:
-# curl https://raw.githubusercontent.com/csc/kragle/master/ansible/init.sh | bash
+# curl https://raw.githubusercontent.com/csc/kragle/master/ansible/build.sh | bash
 
+# TODO Add error handling to exit if a command fails along the way
 
 subscription-manager register --username=$RHN_USER  --password=$RHN_PASS
 subscription-manager attach --pool=$RHN_POOL
@@ -29,7 +30,7 @@ yum -y install git wget rpm-build make asciidoc python2-devel python-setuptools
 
 git clone git://github.com/ansible/ansible.git --recursive
 cd ansible/
-git checkout stable-2.0
+git checkout v2.0.1.0-0.1.rc1
 git submodule update --init --recursive
 make rpm
 yum -y --nogpgcheck localinstall ./rpm-build/ansible-*.noarch.rpm
